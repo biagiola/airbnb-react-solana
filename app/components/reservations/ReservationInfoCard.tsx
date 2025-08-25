@@ -99,7 +99,7 @@ const ReservationInfoCard: React.FC<ReservationInfoCardProps> = ({
           </div>
         </div>
         <div className="mt-3 font-semibold text-base text-black">
-          ₹{reservation.totalPrice}
+          ${reservation.totalPrice}
         </div>
       </div>
     </div>

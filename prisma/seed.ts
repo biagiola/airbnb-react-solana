@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
@@ -13,10 +14,14 @@ async function main() {
   }
 
   // Create sample users
+  const hashedPassword1 = await bcrypt.hash('password123', 12)
+  const hashedPassword2 = await bcrypt.hash('password456', 12)
+
   const user1 = await prisma.user.create({
     data: {
       email: 'john.doe@example.com',
       name: 'John Doe',
+      hashedPassword: hashedPassword1,
       image: 'https://res.cloudinary.com/demo/image/upload/w_400,h_400,c_crop,g_face,r_max/w_200/v1564394775/sample.jpg',
       favoriteIds: []
     },
@@ -26,6 +31,7 @@ async function main() {
     data: {
       email: 'jane.smith@example.com',
       name: 'Jane Smith',
+      hashedPassword: hashedPassword2,
       image: 'https://res.cloudinary.com/demo/image/upload/w_400,h_400,c_crop,g_face,r_max/w_200/v1564394775/sample.jpg',
       favoriteIds: []
     },

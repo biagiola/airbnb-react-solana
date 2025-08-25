@@ -28,7 +28,7 @@ const ReservationCard: FC<ReservationCardProps> = ({
   return (
     <div className="p-5 flex flex-col gap-5 card-shadow border border-border-gray rounded-lg">
       <span className="flex items-end gap-2">
-        <span className="text-2xl font-medium">₹{listing.price}</span> night
+        <span className="text-2xl font-medium">${listing.price}</span> night
       </span>
       <div className="flex flex-col rounded-md">
         <Calendar
@@ -40,7 +40,7 @@ const ReservationCard: FC<ReservationCardProps> = ({
       <Button loading={buttonLoading} text="Reserve" onClick={onSubmit} />
       <div className="flex items-center justify-between font-medium">
         <span>Total before taxes</span>
-        <span>₹{totalPrice}</span>
+        <span>${totalPrice}</span>
       </div>
     </div>
   );

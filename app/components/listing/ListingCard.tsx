@@ -37,7 +37,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
       </div>
 
       <span>
-        <span className="font-semibold">{`₹ ${data.price}`}</span> night
+        <span className="font-semibold">{`$ ${data.price}`}</span> night
       </span>
     </div>
   );
