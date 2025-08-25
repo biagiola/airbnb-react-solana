@@ -83,7 +83,8 @@ describe("airbnb-blockhain", () => {
     .accounts({
       listingAuthority: host.publicKey,  // The wallet signing the transaction
       host: host_pkey,                   // The Host account PDA (proves they're a registered host)
-      // listing: listing_pkey,
+      listing: listing_pkey,                    // ← Uncomment this
+      systemProgram: anchor.web3.SystemProgram.programId  // ← Add this
     })
     .signers([host])
     .rpc({ commitment: "confirmed" });

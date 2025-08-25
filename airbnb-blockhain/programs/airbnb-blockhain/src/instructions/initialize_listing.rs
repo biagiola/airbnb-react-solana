@@ -33,6 +33,9 @@ pub fn _initialize_listing(
     listing.total_bookings = total_bookings;
     listing.is_active = is_active;
     listing.price = price;
+    
+    // Increment the counter to have unique PDA for listings for a host made
+    ctx.accounts.host.listing_count += 1; 
     Ok(())
 }
 
