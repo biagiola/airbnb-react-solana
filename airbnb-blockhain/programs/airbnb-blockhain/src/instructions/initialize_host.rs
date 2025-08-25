@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::states::*;
 
 #[inline(never)]
-pub fn initialize_host(
+pub fn _initialize_host(
     ctx: Context<InitializeHost>,
     name: String,
     email: String,
@@ -21,7 +21,7 @@ pub fn initialize_host(
     host.hashed_password = hashed_password;
     host.created_at = created_at;
     host.bump = ctx.bumps.host;
-
+    host.listing_count = 0;
     Ok(())
 }
 
