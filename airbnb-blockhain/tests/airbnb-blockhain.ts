@@ -2,6 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program, BN } from "@coral-xyz/anchor";
 import { AirbnbBlockhain } from "../target/types/airbnb_blockhain";
 import { PublicKey } from '@solana/web3.js';
+import { assert } from "chai";
 
 const HOST_SEED = "HOST_SEED";
 const LISTING_SEED = "LISTING_SEED";
@@ -41,8 +42,11 @@ describe("airbnb-blockhain", () => {
       name: hostAccount.name,
       email: hostAccount.email,
       createdAt: hostAccount.createdAt.toString(),
-      hostAuthor: hostAccount.hostAuthor.toString()
+      hostAuthor: hostAccount.hostAuthor.toString(),
+      listingCount: hostAccount.listingCount.toNumber()
     });
+
+    assert.strictEqual(hostAccount.listingCount.toNumber(), 0, "Host should start with 0 listings");
   });
 
   it("Should initialize a Listing for a host", async () => {
@@ -55,6 +59,7 @@ describe("airbnb-blockhain", () => {
     // Fetch the host account to get the current listing_count
     const hostAccount = await program.account.host.fetch(host_pkey);
     const currentListingCount = hostAccount.listingCount.toNumber();
+    console.log("currentListingCount: ", currentListingCount);
 
     // Get the listing PDA
     const [listing_pkey, listing_bump] = getListingAddress(
@@ -104,6 +109,73 @@ describe("airbnb-blockhain", () => {
       countryCode: listingAccount.countryCode,
       isActive: listingAccount.isActive
     });
+
+    // ✅ TEST: Verify host listing count incremented to 1
+    const updatedHostAccount = await program.account.host.fetch(host_pkey);
+    console.log("updatedHostAccount: ", updatedHostAccount);
+    assert.strictEqual(updatedHostAccount.listingCount.toNumber(), 1, "Host listing count should be 1 after creating first listing");
+    console.log("Host listing count after first listing:", updatedHostAccount.listingCount.toNumber());
+  });
+
+  it("Should create a second listing and increment counter to 2", async () => {
+    // Get the host PDA
+    const [host_pkey, host_bump] = getHostAddress(
+      host.publicKey,
+      program.programId
+    );
+
+    // Fetch host account to get current listing count
+    const hostAccount = await program.account.host.fetch(host_pkey);
+    const currentListingCount = hostAccount.listingCount.toNumber();
+    
+    // ✅ TEST: Verify we start with count = 1 from previous test
+    assert.strictEqual(currentListingCount, 1, "Host should have 1 listing from previous test");
+
+    // Generate PDA for second listing (count = 1)
+    const [listing2_pkey, listing2_bump] = getListingAddress(
+      host.publicKey,
+      currentListingCount,
+      program.programId,
+    );
+
+    console.log("Creating second listing with count:", currentListingCount);
+    console.log("Second Listing PDA:", listing2_pkey.toString());
+
+    await program.methods.initializeListing(
+      "Mountain Cabin Retreat",
+      "Cozy cabin in the mountains with fireplace and hiking trails",
+      "https://a0.muscache.com/im/pictures/prohost-api/Hosting-1194641374145248817/original/39aa64fa-38c1-4204-b6b2-8e639e43fd87.jpeg?im_w=720",
+      new BN(Date.now()),
+      "Cabins",
+      2,           // room_count
+      1,           // bathroom_count  
+      4,           // guest_count
+      "CA",        // country_code
+      new BN(0),   // total_bookings
+      true,        // is_active
+      new BN(150), // price per night
+    )
+    .accounts({
+      listingAuthority: host.publicKey,
+      host: host_pkey,
+      listing: listing2_pkey,
+      systemProgram: anchor.web3.SystemProgram.programId
+    })
+    .signers([host])
+    .rpc({ commitment: "confirmed" });
+
+    console.log("✅ Second listing initialized successfully!");
+
+    // ✅ TEST: Verify host listing count incremented to 2
+    const finalHostAccount = await program.account.host.fetch(host_pkey);
+    assert.strictEqual(finalHostAccount.listingCount.toNumber(), 2, "Host listing count should be 2 after creating second listing");
+    console.log("Host listing count after second listing:", finalHostAccount.listingCount.toNumber());
+
+    // ✅ TEST: Verify second listing was created correctly
+    const listing2Account = await program.account.listing.fetch(listing2_pkey);
+    assert.strictEqual(listing2Account.title, "Mountain Cabin Retreat");
+    assert.strictEqual(listing2Account.category, "Cabins");
+    console.log("Second listing created:", listing2Account.title);
   });
 });
 

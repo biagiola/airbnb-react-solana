@@ -35,7 +35,10 @@ pub fn _initialize_listing(
     listing.price = price;
     
     // Increment the counter to have unique PDA for listings for a host made
-    ctx.accounts.host.listing_count += 1; 
+    ctx.accounts.host.listing_count += 1;
+    let clg_counter = &ctx.accounts.host.listing_count;
+    msg!("title: {}", listing.title);
+    msg!("counter: {}", clg_counter);
     Ok(())
 }
 
@@ -45,6 +48,7 @@ pub struct InitializeListing<'info> {
     listing_authority: Signer<'info>,
 
     #[account(
+        mut,
         constraint = host.host_author == listing_authority.key()
     )]
     pub host: Account<'info, Host>,
