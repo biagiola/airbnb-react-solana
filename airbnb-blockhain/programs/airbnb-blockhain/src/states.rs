@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
 pub const HOST_SEED: &str = "HOST_SEED";
+pub const GUEST_SEED: &str = "GUEST_SEED";
 pub const LISTING_SEED: &str = "LISTING_SEED";
 
 #[account]
@@ -17,6 +18,27 @@ pub struct Host {
     pub hashed_password: String,
     pub created_at: u64,
     pub listing_count: u64,
+    pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Guest {
+    pub guest_author: Pubkey,
+    #[max_len(32)]
+    pub name: String,
+    #[max_len(64)]
+    pub email: String,
+    #[max_len(500)]
+    pub image_url: String,
+    #[max_len(500)]
+    pub hashed_password: String,
+    pub created_at: u64,
+    #[max_len(32)]
+    pub phone_number: String,    
+    pub date_of_birth: u64,
+    #[max_len(32)]
+    pub preferred_language: String,
     pub bump: u8,
 }
 

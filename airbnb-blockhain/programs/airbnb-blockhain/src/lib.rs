@@ -28,6 +28,30 @@ pub mod airbnb_blockhain {
         )
     }
 
+    pub fn initialize_guest(
+        ctx: Context<InitializeGuest>,
+        name: String,
+        email: String,
+        image_url: String,
+        hashed_password: String,
+        created_at: u64,
+        phone_number: String,
+        date_of_birth: u64,
+        preferred_language: String,
+    ) -> Result<()> {
+        _initialize_guest(
+            ctx,
+            name,
+            email,
+            image_url,
+            hashed_password,
+            created_at,
+            phone_number,
+            date_of_birth,
+            preferred_language,
+        )
+    }
+
     pub fn initialize_listing(
         ctx: Context<InitializeListing>,
         title: String,
