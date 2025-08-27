@@ -83,4 +83,36 @@ pub mod airbnb_blockhain {
             price,
         )
     }
+
+    pub fn initialize_reservation(
+        ctx: Context<InitializeReservation>,
+        reservation_id: u64,
+        listing: Pubkey,
+        host: Pubkey,
+        start_date: u64,
+        end_date: u64,
+        guest_count: u8,
+        total_nights: u16,
+        price_per_night: u64,
+        total_price: u64,
+        status: states::ReservationStatus,
+        created_at: u64,
+        payment_status: states::PaymentStatus,
+    ) -> Result<()> {
+        _initialize_reservation(
+            ctx,
+            reservation_id,
+            listing,
+            host,
+            start_date,
+            end_date,
+            guest_count,
+            total_nights,
+            price_per_night,
+            total_price,
+            status,
+            created_at,
+            payment_status,
+        )
+    }
 }

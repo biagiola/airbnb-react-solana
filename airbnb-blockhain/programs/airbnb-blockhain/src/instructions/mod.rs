@@ -6,3 +6,6 @@ pub mod initialize_listing;
 
 pub use initialize_guest::*;
 pub mod initialize_guest;
+
+pub use initialize_reservation::*;
+pub mod initialize_reservation;

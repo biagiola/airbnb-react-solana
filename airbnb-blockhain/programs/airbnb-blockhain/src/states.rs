@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 pub const HOST_SEED: &str = "HOST_SEED";
 pub const GUEST_SEED: &str = "GUEST_SEED";
 pub const LISTING_SEED: &str = "LISTING_SEED";
+pub const RESERVATION_SEED: &str = "RESERVATION_SEED";
 
 #[account]
 #[derive(InitSpace)]
@@ -63,4 +64,37 @@ pub struct Listing {
     pub total_bookings: u64,
     pub is_active: bool,
     pub price: u64,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Reservation {
+    pub guest: Pubkey,
+    pub listing: Pubkey,
+    pub host: Pubkey,
+    pub start_date: u64,
+    pub end_date: u64,
+    pub guest_count: u8,
+    pub total_nights: u16,
+    pub price_per_night: u64,
+    pub total_price: u64,
+    pub status: ReservationStatus,
+    pub created_at: u64,
+    pub payment_status: PaymentStatus,
+    pub bump: u8,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+pub enum ReservationStatus {
+    Pending,
+    Confirmed,
+    Cancelled,
+    Completed,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+pub enum PaymentStatus {
+    Pending,
+    Paid,
+    Refunded,
 }
