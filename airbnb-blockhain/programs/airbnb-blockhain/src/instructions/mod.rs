@@ -9,3 +9,9 @@ pub mod initialize_guest;
 
 pub use initialize_reservation::*;
 pub mod initialize_reservation;
+
+pub mod payment;
+pub use payment::*;
+
+pub mod token;
+pub use token::*;

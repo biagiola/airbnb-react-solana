@@ -115,4 +115,30 @@ pub mod airbnb_blockhain {
             payment_status,
         )
     }
+
+    pub fn initialize_payment_escrow(
+        ctx: Context<InitializePaymentEscrow>,
+        escrow_id: u64,
+        amount: u64,
+        release_date: u64,
+    ) -> Result<()> {
+        _initialize_payment_escrow(ctx, escrow_id, amount, release_date)
+    }
+
+    pub fn release_payment_escrow(
+        ctx: Context<ReleasePaymentEscrow>,
+    ) -> Result<()> {
+        _release_payment_escrow(ctx)
+    }
+
+    pub fn initialize_token(ctx: Context<InitializeTokenContext>, fee_bps: u16, max_fee: u64) -> Result<()> {
+        _initialize_token(ctx, fee_bps, max_fee)
+    }
+    pub fn mint_token(ctx: Context<MintTokenContext>, amount: u64) -> Result<()> {
+        _mint_token(ctx, amount)
+    }
+    pub fn withdraw_token(ctx: Context<WithdrawTokenContext>) -> Result<()> {
+        _withdraw_token(ctx)
+    }
+
 }

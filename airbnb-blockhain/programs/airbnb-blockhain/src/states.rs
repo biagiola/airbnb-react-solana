@@ -4,6 +4,7 @@ pub const HOST_SEED: &str = "HOST_SEED";
 pub const GUEST_SEED: &str = "GUEST_SEED";
 pub const LISTING_SEED: &str = "LISTING_SEED";
 pub const RESERVATION_SEED: &str = "RESERVATION_SEED";
+pub const PAYMENT_ESCROW_SEED: &str = "PAYMENT_ESCROW_SEED";
 
 #[account]
 #[derive(InitSpace)]
@@ -81,10 +82,14 @@ pub struct Reservation {
     pub status: ReservationStatus,
     pub created_at: u64,
     pub payment_status: PaymentStatus,
+    // Payment-related fields
+    pub payment_escrow: Option<Pubkey>,  // Link to escrow account
+    pub token_amount: u64,               // Amount in tokens
+    pub platform_fee: u64,               // Fee amount
     pub bump: u8,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace, PartialEq)]
 pub enum ReservationStatus {
     Pending,
     Confirmed,
@@ -92,9 +97,31 @@ pub enum ReservationStatus {
     Completed,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace, PartialEq)]
 pub enum PaymentStatus {
     Pending,
     Paid,
     Refunded,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct PaymentEscrow {
+    pub reservation: Pubkey,
+    pub guest: Pubkey,
+    pub host: Pubkey,
+    pub amount: u64,
+    pub platform_fee: u64,
+    pub status: EscrowStatus,
+    pub created_at: u64,
+    pub release_date: u64,  // When host gets paid
+    pub bump: u8,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace, PartialEq)]
+pub enum EscrowStatus {
+    Funded,        // Guest paid
+    Released,      // Host received payment
+    Refunded,      // Guest got refund
+    Disputed,      // Needs resolution
 }
