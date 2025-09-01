@@ -141,6 +141,84 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       bump
     };
   };
+
+  const parseListingAccount = (accountData: Buffer) => {
+    // Skip first 8 bytes (discriminator)
+    const data = accountData.slice(8);
+    let offset = 0;
+
+    // Parse host (32 bytes)
+    const host = new PublicKey(data.slice(offset, offset + 32)).toString();
+    offset += 32;
+
+    // Parse title (4 bytes length + string data)
+    const titleResult = parseString(data, offset);
+    const title = titleResult.value;
+    offset = titleResult.nextOffset;
+
+    // Parse description (4 bytes length + string data)
+    const descriptionResult = parseString(data, offset);
+    const description = descriptionResult.value;
+    offset = descriptionResult.nextOffset;
+
+    // Parse image_url (4 bytes length + string data)
+    const imageResult = parseString(data, offset);
+    const image_url = imageResult.value;
+    offset = imageResult.nextOffset;
+
+    // Parse created_at (8 bytes)
+    const created_at = data.readBigUInt64LE(offset);
+    offset += 8;
+
+    // Parse category (4 bytes length + string data)
+    const categoryResult = parseString(data, offset);
+    const category = categoryResult.value;
+    offset = categoryResult.nextOffset;
+
+    // Parse room_count (1 byte)
+    const room_count = data.readUInt8(offset);
+    offset += 1;
+
+    // Parse bathroom_count (1 byte)
+    const bathroom_count = data.readUInt8(offset);
+    offset += 1;
+
+    // Parse guest_count (1 byte)
+    const guest_count = data.readUInt8(offset);
+    offset += 1;
+
+    // Parse country_code (4 bytes length + string data)
+    const countryResult = parseString(data, offset);
+    const country_code = countryResult.value;
+    offset = countryResult.nextOffset;
+
+    // Parse total_bookings (8 bytes)
+    const total_bookings = data.readBigUInt64LE(offset);
+    offset += 8;
+
+    // Parse is_active (1 byte)
+    const is_active = data.readUInt8(offset) === 1;
+    offset += 1;
+
+    // Parse price (8 bytes)
+    const price = data.readBigUInt64LE(offset);
+
+    return {
+      host,
+      title,
+      description,
+      image_url,
+      created_at: Number(created_at),
+      category,
+      room_count,
+      bathroom_count,
+      guest_count,
+      country_code,
+      total_bookings: Number(total_bookings),
+      is_active,
+      price: Number(price)
+    };
+  };
   
   const handleConnect = async () => {
     // const connection = new Connection("https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/", "confirmed");  
@@ -160,12 +238,15 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
     }
 
     // mint info
+    const guestPDA = "6X5zNtG5uoP9hsBZRct2hx88rdPCJJrJPcC8CrdUVqZT";
+    const mintPubkey = "4YDxhd62kzCcBjKBk6YjDgp1sXPofRHYdBenuyDcYGi6";
+    const listingPDA = "Fqz8W1Fow5f3xZMMFKoE37uJBr2YdxuauVvRfCjDE3Na";
+
     try {
-      console.log("mint pubkey: ", "DsiktmcwWF2TmZ3qpKRJwkTu9jbMYR4jVUaU6ZTpYrew");
+      console.log("mint pubkey: ", mintPubkey);
       const mint = await getMint(
         connection,
-        // new PublicKey("Fyde2stAzdWQoyTMWnD2iqi4vkKEJ8Z1GcvQ6CaYHRa9"),
-        new PublicKey("DsiktmcwWF2TmZ3qpKRJwkTu9jbMYR4jVUaU6ZTpYrew"),
+        new PublicKey(mintPubkey),
         "confirmed",
         TOKEN_2022_PROGRAM_ID
       );
@@ -176,10 +257,10 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
 
     // guest info
     try {
-      console.log("Guest pubkey: ", "2EW9LW3dZTkpErcubLEQHuK2FqU6wB1Z9TnM3g6hYXeP");
-      const guestPubkey = new PublicKey("2EW9LW3dZTkpErcubLEQHuK2FqU6wB1Z9TnM3g6hYXeP");
+      console.log("Guest pubkey: ", guestPDA);
+      const guestPk = new PublicKey(guestPDA);
       
-      const guestAccount = await connection.getAccountInfo(guestPubkey, "confirmed");
+      const guestAccount = await connection.getAccountInfo(guestPk, "confirmed");
       
       if (guestAccount) {
         console.log("guestAccount", guestAccount);
@@ -196,6 +277,29 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       
     } catch (error) {
       console.log("guest info: ", error);
+    }
+
+    // listing info
+    try {
+      console.log("Listing PDA pubkey: ", listingPDA);
+      const listingPk = new PublicKey(listingPDA);
+      
+      
+      const listingAccount = await connection.getAccountInfo(listingPk, "confirmed");
+      
+      if (listingAccount) {
+        console.log("listingAccount", listingAccount);
+
+        // Parse the complete listing data
+        const listingData = parseListingAccount(listingAccount.data);
+        
+        console.log("Parsed Listing Data:", listingData);
+
+      } else {
+        console.log("Listing account not found");
+      }
+    } catch (error) {
+      console.log("listing info: ", error);
     }
 
     setIsOpen(false);
