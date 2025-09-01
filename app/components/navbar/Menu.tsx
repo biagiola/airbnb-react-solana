@@ -1,5 +1,8 @@
 "use client";
 
+import { Connection, PublicKey } from "@solana/web3.js";
+import { getMint, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import Avatar from "../Avatar";
 import MenuItems from "./MenuItems";
@@ -11,6 +14,7 @@ import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import { useRouter } from "next/navigation";
+
 
 interface MenuProps {
   currentUser?: SafeUser | null;
@@ -54,6 +58,39 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
+  
+  const handleConnect = async () => {
+    // const connection = new Connection("https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/", "confirmed");  
+    const connection = new Connection("http://localhost:8899", "confirmed");  
+    const provider = window.solana;
+    
+    console.log("handleConnect isPhatom", provider.isPhantom);
+  
+    if (provider && provider.isPhantom) {
+      await window.solana.connect();
+      const owner: string = await window.solana.publicKey.toString();
+      const ownerPk = new PublicKey(owner);
+
+      console.log('handleConnect owner: ', owner);
+    } else {
+      console.log('provider does not exists');
+    }
+
+    // mint info
+    try {
+      const mint = await getMint(
+        connection,
+        new PublicKey("Fyde2stAzdWQoyTMWnD2iqi4vkKEJ8Z1GcvQ6CaYHRa9"),
+        "confirmed",
+        TOKEN_2022_PROGRAM_ID
+      );
+      console.log(mint);  
+    } catch (error) {
+      console.log("mint error: ", error);
+    }
+
+    setIsOpen(false);
+  }
 
   return (
     <div
@@ -124,10 +161,11 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
                 bold
               />
               <MenuItems
-                onClick={() => {
-                  setIsOpen(false);
-                  loginModal.onOpen();
-                }}
+                // onClick={() => {
+                //   setIsOpen(false);
+                //   loginModal.onOpen();
+                // }}
+                onClick={handleConnect}
                 label="Log in"
                 border
                 bold

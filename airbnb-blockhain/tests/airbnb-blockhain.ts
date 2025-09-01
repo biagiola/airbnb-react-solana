@@ -1,12 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program, BN } from "@coral-xyz/anchor";
 import { AirbnbBlockhain } from "../target/types/airbnb_blockhain";
-import { PublicKey, Keypair } from '@solana/web3.js';
+import { PublicKey, Keypair, Connection } from '@solana/web3.js';
 import { assert } from "chai";
 import {
   TOKEN_2022_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
+  getMint
 } from "@solana/spl-token";
 
 const HOST_SEED = "HOST_SEED";
@@ -88,6 +89,11 @@ describe("airbnb-blockhain", () => {
   it("Should setup token infrastructure", async () => {
     const result = await setupTokenInfrastructure();
     platformTreasuryATA = result.platformTreasuryATA;
+  });
+
+  it("Should display mint tokens", async () => {
+    const mintInfo = await getMintInfo(mint.publicKey, provider.connection);
+    console.log("mintInfo: ", mintInfo);
   });
 
   it("Should initialize a host with valid fields", async () => {
@@ -794,6 +800,10 @@ describe("airbnb-blockhain", () => {
 
 async function airdrop(connection: any, address: any, amount = 1000000000) {
   await connection.confirmTransaction(await connection.requestAirdrop(address, amount), "confirmed");
+}
+
+function getMintInfo(mint: PublicKey, connection: Connection) {
+  return getMint(connection, mint, "confirmed", TOKEN_2022_PROGRAM_ID);
 }
 
 function getHostAddress(author: PublicKey, programID: PublicKey) {
