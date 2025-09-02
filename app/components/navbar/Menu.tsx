@@ -9,7 +9,7 @@ import {
   parseListingAccount,
   guestPDA,
   mintPubkey,
-  listingPDA,
+  listingPDA_1,
 } from "@/app/actions/anchor/constants";
 
 // Type declaration for Solana wallet
@@ -44,9 +44,17 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const [ownerPK, setOwnerPK] = useState("");
+
   const toggleOpen = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
+
+  // Function to shorten the public key for display
+  const shortenPublicKey = (publicKey: string) => {
+    if (!publicKey) return "";
+    return `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+  };
 
   const toggleRent = useCallback(() => {
     if (!currentUser) {
@@ -88,6 +96,7 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       const ownerPk = new PublicKey(owner);
 
       console.log('handleConnect owner: ', owner);
+      setOwnerPK(owner);
     } else {
       console.log('provider does not exists');
     }
@@ -131,27 +140,27 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
     }
 
     // listing info
-    try {
-      console.log("Listing PDA pubkey: ", listingPDA);
-      const listingPk = new PublicKey(listingPDA);
+    // try {
+    //   console.log("Listing PDA pubkey: ", listing PDA);
+    //   const listingPk = new PublicKey(listing PDA);
       
       
-      const listingAccount = await connection.getAccountInfo(listingPk, "confirmed");
+    //   const listingAccount = await connection.getAccountInfo(listingPk, "confirmed");
       
-      if (listingAccount) {
-        console.log("listingAccount", listingAccount);
+    //   if (listingAccount) {
+    //     console.log("listingAccount", listingAccount);
 
-        // Parse the complete listing data
-        const listingData = parseListingAccount(listingAccount.data);
+    //     // Parse the complete listing data
+    //     const listingData = parseListingAccount(listingAccount.data);
         
-        console.log("Parsed Listing Data:", listingData);
+    //     console.log("Parsed Listing Data:", listingData);
 
-      } else {
-        console.log("Listing account not found");
-      }
-    } catch (error) {
-      console.log("listing info: ", error);
-    }
+    //   } else {
+    //     console.log("Listing account not found");
+    //   }
+    // } catch (error) {
+    //   console.log("listing info: ", error);
+    // }
 
     setIsOpen(false);
   }
@@ -169,10 +178,10 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       </div>
 
       <div
-        onClick={rentModal.onOpen}
+        onClick={handleConnect}
         className="font-bold whitespace-nowrap text-dark-gray p-3 hover:bg-hover-gray rounded-full cursor-pointer"
       >
-        Connect
+        {ownerPK ? shortenPublicKey(ownerPK) : "Connect"}
       </div>
 
       <span className="p-3 rounded-full hover:bg-hover-gray">

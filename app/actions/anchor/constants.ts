@@ -1,14 +1,16 @@
 import { PublicKey } from "@solana/web3.js";
 
-export const guestPDA = "2hjLVM3n2TNfyEtnDQk2CWFzcgMAhL1jNygndDhidY3p";
-export const mintPubkey = "AYMgLNy7BJGgyN414ZoFW3tMDzvYnxVHrAKA5fBZd8Q8";
-export const listingPDA = "77KpNqzWCMMxAQCEjwDfNYg2y7ix79sGpwr1of5rxFNg";
-export const listingPDA_1 = "77KpNqzWCMMxAQCEjwDfNYg2y7ix79sGpwr1of5rxFNg";
-export const listingPDA_2 = "2UxjAYuMh1sJbGaV8VVNac63NyzY7ZDWBNBjCKVVC4v7";
-export const listingPDA_3 = "AbvfAgSSZTmfgR49g2Xq1frTVEk1vhNDnGkgmtL4e54D";
-export const listingPDA_4 = "5mE2sDbuXeGUMC3uYAZqvAK9KiTs39E8TNdVS2uWtPjD";
-export const listingPDA_5 = "AHfYTbuuVuaZ2reWmGZ8T4W3ocMQsWDXcfLoBwr3KhfN";
-export const listingPDA_6 = "9Dp3y7TdVMQH5yse8GwZ6ZxTagMWXT5LVLFuS2wsMqCr";
+export const guestPDA = "EbYQpsPnjC7mEWC5w3PLVSPTStV98d1oVLBZfR8Qqswb";
+export const mintPubkey = "EvEWn1Pxx1w4PqqAJD4xbQDqQyzYC96gaYnEUqV9Nx9W";
+
+export const listingPDA_1 = "EhTwCFi6Hzb6XoJWkPs8jwX41uwxWo7L4UawcN7bRyPw";
+export const listingPDA_2 = "DLzxjBtvtFrDFiGs9b2cXHpRdfUnfMT59C66YrmUw7vL";
+export const listingPDA_3 = "Cd45eo4diwvPVDdGKooR37wSZzizGxkbFPe7hBtz1tV4";
+export const listingPDA_4 = "DrrkD6cyMLfN1sq6UiErEcdV8LL4WjqiP4L7eN6srRk5";
+export const listingPDA_5 = "Afg4eMpM65CQsjYns92NoVgCfcfMfLJNHCBr1Uc3w8Hg";
+export const listingPDA_6 = "BdNQndbPavs4y3YfxEQQffKy7ykGYLCT5W96f7XcahTe";
+export const hostPDA = "DCZN4wUQxAa8T5XWckyjshPt2EUwLmRnyYx5arLhoXDd";
+
 
 export const RPC = "http://127.0.0.1:8899" // TODO: use env
 

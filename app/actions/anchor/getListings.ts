@@ -1,5 +1,9 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { getAllListingPDAs, parseListingAccount } from "@/app/actions/anchor/constants";
+import {
+	getAllListingPDAs,
+	parseListingAccount,
+	guestPDA,
+} from "@/app/actions/anchor/constants";
 
 export interface Iparams {
   userId: string;
@@ -13,13 +17,13 @@ export interface Iparams {
   category: string;
 }
 
-export default async function getListings_() {
+export default async function getListings_(searchParams: any) {
+	console.log("searchParams: ", searchParams);
 	try {
 		const connection = new Connection("http://127.0.0.1:8899", "confirmed"); 
 		
 		// Get all listing PDAs from constants
 		const allListingPDAs = getAllListingPDAs();
-		console.log(`Found ${allListingPDAs.length} listing PDAs:`, allListingPDAs);
 		
 		if (allListingPDAs.length === 0) {
 			console.log("No listing PDAs found in constants");
@@ -39,7 +43,7 @@ export default async function getListings_() {
 					
 					// Data manipulation - transform to desired format
 					const transformedData = {
-						id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+						id: listingPk,
 						title: listingData.title,
 						description: listingData.description,
 						imageSrc: listingData.image_url,
@@ -49,7 +53,7 @@ export default async function getListings_() {
 						bathroomCount: listingData.bathroom_count,
 						guestCount: listingData.guest_count,
 						locationValue: listingData.location_value,
-						userId: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+						userId: guestPDA,
 						price: listingData.price
 					};
 					

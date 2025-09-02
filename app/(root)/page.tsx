@@ -12,16 +12,20 @@ import PriceSwitch from "../components/inputs/PriceSwitch";
 // . realizar un write desde el frontend a la blochain
 //    - hacer un reservation por el guest
 export default async function Home({ searchParams }: any) {
+  // const [
+  //   currentUser,
+  //   listings,
+  // ] = await Promise.all([
+  //   getCurrentUser(),
+  //   getListings(searchParams),
+  // ]);
+
   const [
-    listings,
     currentUser,
-    listings_,
-    // currentUser_,
+    listings,
   ] = await Promise.all([
-    getListings(searchParams),
     getCurrentUser(),
-    getListings_(),
-    // getCurrentUser_(),
+    getListings_(searchParams),
   ]);
 
   return (
@@ -30,11 +34,14 @@ export default async function Home({ searchParams }: any) {
         <PriceSwitch />
         <div className="grid grid-cols-1 sm:grid-cols-2 small:grid-cols-3 medium:grid-cols-4 2xl:grid-cols-5 largest:grid-cols-6 gap-8">
           {
-            listings_ && listings_.length > 0 ? (
-              listings_.map((listing) => (
+            listings && listings.length > 0 ? (
+              listings.map((listing) => (
                 <ListingCard
-                  key={listing.id}
-                  data={listing}
+                  key={listing.id.toString()}
+                  data={{
+                    ...listing,
+                    id: listing.id.toString(),
+                  }}
                   currentUser={currentUser}
                 />
               ))

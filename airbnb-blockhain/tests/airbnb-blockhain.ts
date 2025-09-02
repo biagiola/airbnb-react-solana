@@ -117,18 +117,8 @@ describe("airbnb-blockhain", () => {
     .signers([host])
     .rpc({ commitment: "confirmed" });
 
-    // console.log("✅ Host initialized successfully!");
-
     // Fetch and verify the created host
     const hostAccount = await program.account.host.fetch(host_pkey);
-    // console.log("Created host:", {
-    //   name: hostAccount.name,
-    //   email: hostAccount.email,
-    //   createdAt: hostAccount.createdAt.toString(),
-    //   hostAuthor: hostAccount.hostAuthor.toString(),
-    //   listingCount: hostAccount.listingCount.toNumber()
-    // });
-
     assert.strictEqual(hostAccount.listingCount.toNumber(), 0, "Host should start with 0 listings");
   });
 
@@ -332,7 +322,7 @@ describe("airbnb-blockhain", () => {
     updateFrontendConstants(
       guest_pkey.toBase58(),
       mint.publicKey.toBase58(),
-      listingPDAs[0].toBase58(), // Use first listing as main listingPDA
+      host_pkey.toBase58(),
       listingPDAStrings
     );
 
@@ -1002,7 +992,7 @@ function getPaymentEscrowAddress(reservation: PublicKey, escrowId: number, progr
 }
 
 // Helper function to update frontend constants.ts file
-function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPDA: string, allListingPDAs: string[] = []) {
+function updateFrontendConstants(guestPDA: string, mintPubkey: string, hostPDA: string, allListingPDAs: string[] = []) {
   try {
     // Path to the constants file from the test directory
     const constantsPath = path.join(__dirname, '..', '..', 'app', 'actions', 'anchor', 'constants.ts');
@@ -1010,7 +1000,7 @@ function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPD
     // Read the current file
     let fileContent = fs.readFileSync(constantsPath, 'utf8');
     
-    // Replace the three main constants using regex
+    // Replace the two main constants using regex
     fileContent = fileContent.replace(
       /export const guestPDA = "[^"]*";/,
       `export const guestPDA = "${guestPDA}";`
@@ -1022,8 +1012,8 @@ function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPD
     );
     
     fileContent = fileContent.replace(
-      /export const listingPDA = "[^"]*";/,
-      `export const listingPDA = "${listingPDA}";`
+      /export const hostPDA = "[^"]*";/,
+      `export const hostPDA = "${hostPDA}";`
     );
 
     // Update all listing PDAs if provided
@@ -1031,13 +1021,13 @@ function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPD
       // First, remove any existing listingPDA_X constants
       fileContent = fileContent.replace(/export const listingPDA_\d+ = "[^"]*";\n/g, '');
       
-      // Find the position after the main listingPDA constant to insert the new ones
-      const listingPDAIndex = fileContent.indexOf(`export const listingPDA = "${listingPDA}";`);
-      if (listingPDAIndex !== -1) {
-        const insertPosition = fileContent.indexOf('\n', listingPDAIndex) + 1;
+      // Find the position after the mintPubkey constant to insert the new ones
+      const mintPubkeyIndex = fileContent.indexOf(`export const mintPubkey = "${mintPubkey}";`);
+      if (mintPubkeyIndex !== -1) {
+        const insertPosition = fileContent.indexOf('\n', mintPubkeyIndex) + 1;
         
         // Create the listing PDA constants
-        let listingPDAConstants = '';
+        let listingPDAConstants = '\n';
         allListingPDAs.forEach((pda, index) => {
           listingPDAConstants += `export const listingPDA_${index + 1} = "${pda}";\n`;
         });
@@ -1053,7 +1043,7 @@ function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPD
     console.log("✅ Frontend constants updated successfully!");
     console.log(`   guestPDA: ${guestPDA}`);
     console.log(`   mintPubkey: ${mintPubkey}`);
-    console.log(`   listingPDA: ${listingPDA}`);
+    console.log(`   hostPDA: ${hostPDA}`);
     if (allListingPDAs.length > 0) {
       console.log(`   ${allListingPDAs.length} listing PDAs updated:`);
       allListingPDAs.forEach((pda, index) => {

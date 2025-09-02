@@ -24,7 +24,6 @@ export default async function getCurrentUser() {
     } else {
       console.log("Guest account not found");
     }
-    
   } catch (error) {
     console.log("guest info: ", error);
   }
