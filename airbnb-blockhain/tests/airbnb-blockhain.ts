@@ -3,6 +3,8 @@ import { Program, BN } from "@coral-xyz/anchor";
 import { AirbnbBlockhain } from "../target/types/airbnb_blockhain";
 import { PublicKey, Keypair, Connection } from '@solana/web3.js';
 import { assert } from "chai";
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   TOKEN_2022_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -79,9 +81,9 @@ describe("airbnb-blockhain", () => {
     .signers([platformAuthority])
     .rpc({ commitment: "confirmed" });
     
-    console.log("✅ Token infrastructure set up");
-    console.log("Mint:", mint.publicKey.toString());
-    console.log("Platform Treasury:", platformTreasuryATA.toString());
+    // console.log("✅ Token infrastructure set up");
+    // console.log("Mint:", mint.publicKey.toString());
+    // console.log("Platform Treasury:", platformTreasuryATA.toString());
     
     return { platformTreasuryATA };
   }
@@ -93,7 +95,7 @@ describe("airbnb-blockhain", () => {
 
   it("Should display mint tokens", async () => {
     const mintInfo = await getMintInfo(mint.publicKey, provider.connection);
-    console.log("mintInfo: ", mintInfo);
+    // console.log("mintInfo: ", mintInfo);
   });
 
   it("Should initialize a host with valid fields", async () => {
@@ -115,17 +117,17 @@ describe("airbnb-blockhain", () => {
     .signers([host])
     .rpc({ commitment: "confirmed" });
 
-    console.log("✅ Host initialized successfully!");
+    // console.log("✅ Host initialized successfully!");
 
     // Fetch and verify the created host
     const hostAccount = await program.account.host.fetch(host_pkey);
-    console.log("Created host:", {
-      name: hostAccount.name,
-      email: hostAccount.email,
-      createdAt: hostAccount.createdAt.toString(),
-      hostAuthor: hostAccount.hostAuthor.toString(),
-      listingCount: hostAccount.listingCount.toNumber()
-    });
+    // console.log("Created host:", {
+    //   name: hostAccount.name,
+    //   email: hostAccount.email,
+    //   createdAt: hostAccount.createdAt.toString(),
+    //   hostAuthor: hostAccount.hostAuthor.toString(),
+    //   listingCount: hostAccount.listingCount.toNumber()
+    // });
 
     assert.strictEqual(hostAccount.listingCount.toNumber(), 0, "Host should start with 0 listings");
   });
@@ -149,8 +151,20 @@ describe("airbnb-blockhain", () => {
       program.programId,
     );
 
-    console.log("Host PDA:", host_pkey.toString());
-    console.log("Listing PDA:", listing_pkey.toString());
+    const [guest_pkey, guest_bump]= getGuestAddress(
+      guest.publicKey,
+      program.programId
+    );
+    console.log("Guest pubkey: ", guest_pkey.toBase58());
+    console.log("Mint pubkey: ", mint.publicKey.toBase58());
+    console.log("listing_pkey", listing_pkey);
+
+    // Update frontend constants with the new values
+    updateFrontendConstants(
+      guest_pkey.toBase58(),
+      mint.publicKey.toBase58(),
+      listing_pkey.toBase58()
+    );
 
     await program.methods.initializeListing(
       "Beautiful Beach House",
@@ -161,7 +175,7 @@ describe("airbnb-blockhain", () => {
       3,           // room_count
       2,           // bathroom_count  
       6,           // guest_count
-      "US",        // country_code
+      "FR",        // location_value
       new BN(0),   // total_bookings
       true,        // is_active
       new BN(299), // price per night
@@ -175,30 +189,151 @@ describe("airbnb-blockhain", () => {
     .signers([host])
     .rpc({ commitment: "confirmed" });
 
-    console.log("✅ Listing initialized successfully!");
-
     // Fetch and verify the created listing
     const listingAccount = await program.account.listing.fetch(listing_pkey);
-    console.log("Created listing:", {
-      title: listingAccount.title,
-      description: listingAccount.description,
-      category: listingAccount.category,
-      price: listingAccount.price.toString(),
-      host: listingAccount.host.toString(),
-      roomCount: listingAccount.roomCount,
-      guestCount: listingAccount.guestCount,
-      countryCode: listingAccount.countryCode,
-      isActive: listingAccount.isActive
-    });
 
-    // ✅ TEST: Verify host listing count incremented to 1
+    // TEST: Verify host listing count incremented to 1
     const updatedHostAccount = await program.account.host.fetch(host_pkey);
-    console.log("updatedHostAccount: ", updatedHostAccount);
     assert.strictEqual(updatedHostAccount.listingCount.toNumber(), 1, "Host listing count should be 1 after creating first listing");
     console.log("Host listing count after first listing:", updatedHostAccount.listingCount.toNumber());
   });
 
-  it("Should create a second listing and increment listing counter to 2", async () => {
+  it("Should initialize 6 listings for frontend testing", async () => {
+    // Get the host PDA
+    const [host_pkey, host_bump] = getHostAddress(
+      host.publicKey,
+      program.programId
+    );
+
+    // Fetch current host listing count
+    const hostAccount = await program.account.host.fetch(host_pkey);
+    let currentListingCount = hostAccount.listingCount.toNumber();
+
+    // Array to store all listing PDAs
+    const listingPDAs: PublicKey[] = [];
+
+    // Define the 6 listings data
+    const listingsData = [
+      {
+        title: "Tropical Island Bungalow",
+        description: "Wake up to crystal clear waters and white sandy beaches. This overwater bungalow offers the ultimate tropical experience.",
+        image_url: "https://a0.muscache.com/im/pictures/miso/Hosting-50879395/original/2d12a9cf-ba41-4010-9f2f-68e46417dbb6.jpeg",
+        category: "Islands",
+        room_count: 1,
+        bathroom_count: 1,
+        guest_count: 2,
+        location_value: "MV", // Maldives
+        price: 350
+      },
+      {
+        title: "Mountain Cabin Retreat",
+        description: "Escape to the mountains in this cozy cabin surrounded by pine trees and hiking trails. Perfect for a peaceful getaway.",
+        image_url: "https://a0.muscache.com/im/pictures/miso/Hosting-652362144050470328/original/9e9f5cbe-c49d-48f6-a285-63f997739b31.jpeg",
+        category: "Cabins",
+        room_count: 2,
+        bathroom_count: 1,
+        guest_count: 4,
+        location_value: "US",
+        price: 180
+      },
+      {
+        title: "Modern Downtown Loft",
+        description: "Stylish loft in the heart of the city with floor-to-ceiling windows and contemporary design. Walking distance to everything.",
+        image_url: "https://a0.muscache.com/im/pictures/miso/Hosting-11647783/original/e1fbc6be-2711-40de-b29c-b839bc424593.jpeg",
+        category: "Modern",
+        room_count: 1,
+        bathroom_count: 1,
+        guest_count: 2,
+        location_value: "US",
+        price: 220
+      },
+      {
+        title: "Beachfront Villa Paradise",
+        description: "Luxurious beachfront villa with private pool and direct beach access. Stunning ocean views from every room.",
+        image_url: "https://a0.muscache.com/im/pictures/miso/Hosting-1195553193230877014/original/00dd2263-c1b6-4f77-9431-aa32a215c367.jpeg",
+        category: "Beach",
+        room_count: 4,
+        bathroom_count: 3,
+        guest_count: 8,
+        location_value: "MX", // Mexico
+        price: 450
+      },
+      {
+        title: "Countryside Manor House",
+        description: "Historic manor house set in rolling countryside. Features antique furnishings and beautiful gardens.",
+        image_url: "https://a0.muscache.com/im/pictures/prohost-api/Hosting-1061539479175162764/original/4cfd7596-7ee4-4f87-81aa-4de1d9643601.jpeg",
+        category: "Countryside",
+        room_count: 5,
+        bathroom_count: 3,
+        guest_count: 10,
+        location_value: "GB", // Great Britain
+        price: 280
+      },
+      {
+        title: "Desert Oasis Glamping",
+        description: "Unique glamping experience in the desert with luxury amenities and breathtaking stargazing opportunities.",
+        image_url: "https://a0.muscache.com/im/pictures/prohost-api/Hosting-1194641374145248817/original/39aa64fa-38c1-4204-b6b2-8e639e43fd87.jpeg?im_w=720",
+        category: "Desert",
+        room_count: 1,
+        bathroom_count: 1,
+        guest_count: 2,
+        location_value: "AE", // UAE
+        price: 320
+      }
+    ];
+
+    // Create each listing
+    for (let i = 0; i < listingsData.length; i++) {
+      const listing = listingsData[i];
+      
+      // Get the listing PDA for current count
+      const [listing_pkey, listing_bump] = getListingAddress(
+        host.publicKey,
+        currentListingCount,
+        program.programId,
+      );
+
+      listingPDAs.push(listing_pkey);
+
+      await program.methods.initializeListing(
+        listing.title,
+        listing.description,
+        listing.image_url,
+        new BN(Date.now()),
+        listing.category,
+        listing.room_count,
+        listing.bathroom_count,
+        listing.guest_count,
+        listing.location_value,
+        new BN(0), // total_bookings
+        true, // is_active
+        new BN(listing.price)
+      )
+      .accounts({
+        listingAuthority: host.publicKey,
+        host: host_pkey,
+        listing: listing_pkey,
+        systemProgram: anchor.web3.SystemProgram.programId
+      })
+      .signers([host])
+      .rpc({ commitment: "confirmed" });
+
+      currentListingCount++;
+      console.log(`✅ Created listing ${i + 1}: ${listing.title}`);
+    }
+
+    // Console.log all listing PDAs
+    console.log("\n🏠 All Listing PDAs:");
+    listingPDAs.forEach((pda, index) => {
+      console.log(`Listing ${index + 1}: ${pda.toBase58()}`);
+    });
+
+    // Verify final host listing count
+    const finalHostAccount = await program.account.host.fetch(host_pkey);
+    console.log(`\n📊 Host final listing count: ${finalHostAccount.listingCount.toNumber()}`);
+  });
+
+  it("Should create a second listing and increment listing counter to 8", async () => {
     // Get the host PDA
     const [host_pkey, host_bump] = getHostAddress(
       host.publicKey,
@@ -209,10 +344,10 @@ describe("airbnb-blockhain", () => {
     const hostAccount = await program.account.host.fetch(host_pkey);
     const currentListingCount = hostAccount.listingCount.toNumber();
     
-    // ✅ TEST: Verify we start with count = 1 from previous test
-    assert.strictEqual(currentListingCount, 1, "Host should have 1 listing from previous test");
+    // TEST: Verify we start with count = 7 from previous test
+    assert.strictEqual(currentListingCount, 7, "Host should have 7 listing from previous test");
 
-    // Generate PDA for second listing (count = 1)
+    // Generate PDA for second listing (count = 8)
     const [listing2_pkey, listing2_bump] = getListingAddress(
       host.publicKey,
       currentListingCount,
@@ -231,7 +366,7 @@ describe("airbnb-blockhain", () => {
       2,           // room_count
       1,           // bathroom_count  
       4,           // guest_count
-      "CA",        // country_code
+      "UK",        // location_value
       new BN(0),   // total_bookings
       true,        // is_active
       new BN(150), // price per night
@@ -245,14 +380,12 @@ describe("airbnb-blockhain", () => {
     .signers([host])
     .rpc({ commitment: "confirmed" });
 
-    console.log("✅ Second listing initialized successfully!");
-
-    // ✅ TEST: Verify host listing count incremented to 2
+    // TEST: Verify host listing count incremented to 8
     const finalHostAccount = await program.account.host.fetch(host_pkey);
-    assert.strictEqual(finalHostAccount.listingCount.toNumber(), 2, "Host listing count should be 2 after creating second listing");
+    assert.strictEqual(finalHostAccount.listingCount.toNumber(), 8, "Host listing count should be 8 after creating second listing");
     console.log("Host listing count after second listing:", finalHostAccount.listingCount.toNumber());
 
-    // ✅ TEST: Verify second listing was created correctly
+    // TEST: Verify second listing was created correctly
     const listing2Account = await program.account.listing.fetch(listing2_pkey);
     assert.strictEqual(listing2Account.title, "Mountain Cabin Retreat");
     assert.strictEqual(listing2Account.category, "Cabins");
@@ -287,6 +420,8 @@ describe("airbnb-blockhain", () => {
     );
 
     const guestAccount = await program.account.guest.fetch(guest_pkey);
+    console.log("guest_pkey: ", guest_pkey);
+    console.log("guestAccount", guestAccount);
 
     // TEST: Verify guest was created correctly
     assert.strictEqual(guestAccount.name, "David Biagiola", "Guest name should match");
@@ -856,4 +991,41 @@ function getPaymentEscrowAddress(reservation: PublicKey, escrowId: number, progr
       reservation.toBuffer(),
       escrowIdBuffer,
     ], programID);
+}
+
+// Helper function to update frontend constants.ts file
+function updateFrontendConstants(guestPDA: string, mintPubkey: string, listingPDA: string) {
+  try {
+    // Path to the constants file from the test directory
+    const constantsPath = path.join(__dirname, '..', '..', 'app', 'actions', 'anchor', 'constants.ts');
+    
+    // Read the current file
+    let fileContent = fs.readFileSync(constantsPath, 'utf8');
+    
+    // Replace the three constants using regex
+    fileContent = fileContent.replace(
+      /export const guestPDA = "[^"]*";/,
+      `export const guestPDA = "${guestPDA}";`
+    );
+    
+    fileContent = fileContent.replace(
+      /export const mintPubkey = "[^"]*";/,
+      `export const mintPubkey = "${mintPubkey}";`
+    );
+    
+    fileContent = fileContent.replace(
+      /export const listingPDA = "[^"]*";/,
+      `export const listingPDA = "${listingPDA}";`
+    );
+    
+    // Write the updated content back to the file
+    fs.writeFileSync(constantsPath, fileContent, 'utf8');
+    
+    console.log("✅ Frontend constants updated successfully!");
+    console.log(`   guestPDA: ${guestPDA}`);
+    console.log(`   mintPubkey: ${mintPubkey}`);
+    console.log(`   listingPDA: ${listingPDA}`);
+  } catch (error) {
+    console.error("❌ Error updating frontend constants:", error);
+  }
 }
