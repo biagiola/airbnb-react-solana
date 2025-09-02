@@ -13,7 +13,7 @@ pub fn _initialize_listing(
     room_count: u8,
     bathroom_count: u8,
     guest_count: u8,
-    country_code: String,
+    location_value: String,
     total_bookings: u64,
     is_active: bool,
     price: u64,
@@ -29,7 +29,7 @@ pub fn _initialize_listing(
     listing.room_count = room_count;
     listing.bathroom_count = bathroom_count;
     listing.guest_count = guest_count;
-    listing.country_code = country_code;
+    listing.location_value = location_value;
     listing.total_bookings = total_bookings;
     listing.is_active = is_active;
     listing.price = price;

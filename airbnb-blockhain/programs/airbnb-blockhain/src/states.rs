@@ -60,8 +60,8 @@ pub struct Listing {
     pub room_count: u8,
     pub bathroom_count: u8,
     pub guest_count: u8,
-    #[max_len(10)]
-    pub country_code: String,
+    #[max_len(32)]
+    pub location_value: String, // US, UK, FR
     pub total_bookings: u64,
     pub is_active: bool,
     pub price: u64,
