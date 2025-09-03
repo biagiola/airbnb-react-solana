@@ -8,6 +8,7 @@ use anchor_spl::{
     },
     token_interface::{ transfer_fee_initialize, TransferFeeInitialize }
 };
+// use mpl_token_metadata::instructions::CreateMetadataAccountV3; // TODO
 
 
 pub fn _initialize_token(ctx: Context<InitializeTokenContext>, fee_bps: u16, max_fee: u64) -> Result<()> {
@@ -70,6 +71,36 @@ pub fn _initialize_token(ctx: Context<InitializeTokenContext>, fee_bps: u16, max
         &creator.key(),
         None
     )?;
+
+    // TODO: CPI for metadata
+    // let metadata_ctx = CpiContext::new(
+    //     metadata_program.to_account_info(),
+    //     CreateMetadataAccountV3 {
+    //         metadata: metadata.to_account_info(),
+    //         mint: mint.to_account_info(),
+    //         mint_authority: creator.to_account_info(),
+    //         payer: creator.to_account_info(),
+    //         update_authority: creator.to_account_info(),
+    //         system_program: system_program.to_account_info(),
+    //         rent: rent.to_account_info(),
+    //     }
+    // );
+
+    // create_metadata_accounts_v3(
+    //     metadata_ctx,
+    //     DataV2 {
+    //         name: "Airby".to_string(),
+    //         symbol: "AIR".to_string(),
+    //         uri: "https://your-metadata-uri.json".to_string(),
+    //         seller_fee_basis_points: 0,
+    //         creators: None,
+    //         collection: None,
+    //         uses: None,
+    //     },
+    //     false,
+    //     true,
+    //     None,
+    // )?;
 
     Ok(())
 }

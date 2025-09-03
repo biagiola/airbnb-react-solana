@@ -10,6 +10,7 @@ import {
   guestPDA,
   mintPubkey,
   listingPDA_1,
+  RPC,
 } from "@/app/actions/anchor/constants";
 
 // Type declaration for Solana wallet
@@ -84,83 +85,24 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
   }, [isOpen]);
   
   const handleConnect = async () => {
-    // const connection = new Connection("https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/", "confirmed");  
-    const connection = new Connection("http://127.0.0.1:8899", "confirmed"); 
     const provider = window.solana;
     
     console.log("handleConnect isPhatom", provider.isPhantom);
   
-    if (provider && provider.isPhantom) {
-      await window.solana.connect();
-      const owner: string = await window.solana.publicKey.toString();
-      const ownerPk = new PublicKey(owner);
-
-      console.log('handleConnect owner: ', owner);
-      setOwnerPK(owner);
-    } else {
-      console.log('provider does not exists');
-    }
-
-    // mint info
     try {
-      console.log("mint pubkey: ", mintPubkey);
-      const mint = await getMint(
-        connection,
-        new PublicKey(mintPubkey),
-        "confirmed",
-        TOKEN_2022_PROGRAM_ID
-      );
-      console.log(mint);  
-    } catch (error) {
-      console.log("mint error: ", error);
-    }
-
-    // guest info
-    try {
-      console.log("Guest pubkey: ", guestPDA);
-      const guestPk = new PublicKey(guestPDA);
-      
-      const guestAccount = await connection.getAccountInfo(guestPk, "confirmed");
-      
-      if (guestAccount) {
-        console.log("guestAccount", guestAccount);
-
-        // Parse the complete guest data
-        const guestData = parseGuestAccount(guestAccount.data);
-        
-        console.log("Parsed Guest Data:", guestData);
-        console.log("Guest Name:", guestData.name);
-        console.log("Guest Email:", guestData.email);
+      if (provider && provider.isPhantom) {
+        await window.solana.connect();
+        const owner: string = await window.solana.publicKey.toString();
+        const ownerPk = new PublicKey(owner);
+  
+        console.log('handleConnect owner: ', owner);
+        setOwnerPK(owner);
       } else {
-        console.log("Guest account not found");
+        console.log('provider does not exists');
       }
-      
     } catch (error) {
-      console.log("guest info: ", error);
+      console.log(error);
     }
-
-    // listing info
-    // try {
-    //   console.log("Listing PDA pubkey: ", listing PDA);
-    //   const listingPk = new PublicKey(listing PDA);
-      
-      
-    //   const listingAccount = await connection.getAccountInfo(listingPk, "confirmed");
-      
-    //   if (listingAccount) {
-    //     console.log("listingAccount", listingAccount);
-
-    //     // Parse the complete listing data
-    //     const listingData = parseListingAccount(listingAccount.data);
-        
-    //     console.log("Parsed Listing Data:", listingData);
-
-    //   } else {
-    //     console.log("Listing account not found");
-    //   }
-    // } catch (error) {
-    //   console.log("listing info: ", error);
-    // }
 
     setIsOpen(false);
   }

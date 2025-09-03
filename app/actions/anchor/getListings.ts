@@ -3,6 +3,7 @@ import {
 	getAllListingPDAs,
 	parseListingAccount,
 	guestPDA,
+	RPC,
 } from "@/app/actions/anchor/constants";
 
 export interface Iparams {
@@ -20,7 +21,7 @@ export interface Iparams {
 export default async function getListings_(searchParams: any) {
 	console.log("searchParams: ", searchParams);
 	try {
-		const connection = new Connection("http://127.0.0.1:8899", "confirmed"); 
+		const connection = new Connection(RPC, "confirmed"); 
 		
 		// Get all listing PDAs from constants
 		const allListingPDAs = getAllListingPDAs();

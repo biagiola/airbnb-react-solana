@@ -6,11 +6,6 @@ import ClientOnly from "../components/ClientOnly";
 import ListingCard from "../components/listing/ListingCard";
 import PriceSwitch from "../components/inputs/PriceSwitch";
 
-// TODO
-// . agregar los campos que flatan en la blockchain
-// . usar los valores de la blockchain para mapearlo y mostrarlo en el frontend
-// . realizar un write desde el frontend a la blochain
-//    - hacer un reservation por el guest
 export default async function Home({ searchParams }: any) {
   // const [
   //   currentUser,
@@ -46,7 +41,7 @@ export default async function Home({ searchParams }: any) {
                 />
               ))
             ) : (
-              <div>There are no blockchain listings yet</div>
+              <div>There are no listings yet</div>
             )
           }
         </div>

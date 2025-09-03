@@ -1,5 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { listingPDA_1, parseListingAccount } from "@/app/actions/anchor/constants";
+import { listingPDA_1, parseListingAccount, RPC } from "@/app/actions/anchor/constants";
 
 interface IParams {
   listingId?: string
@@ -7,7 +7,7 @@ interface IParams {
 
 export default async function currentListing(params: IParams) {
   try {
-    const connection = new Connection("http://127.0.0.1:8899", "confirmed"); 
+    const connection = new Connection(RPC, "confirmed"); 
     const { listingId } = params;
 
     // For now, use listingPDA_1 as default, but this should use listingId when we implement PDA routing

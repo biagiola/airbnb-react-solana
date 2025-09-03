@@ -1,18 +1,24 @@
 import { PublicKey } from "@solana/web3.js";
 
-export const guestPDA = "EbYQpsPnjC7mEWC5w3PLVSPTStV98d1oVLBZfR8Qqswb";
-export const mintPubkey = "EvEWn1Pxx1w4PqqAJD4xbQDqQyzYC96gaYnEUqV9Nx9W";
+export const guestPDA = "583VKRJMoibV11NXxAaMaV6qYgA8hxT44nC2gLjRnLym";
+export const mintPubkey = "C3TMMfUdiLtzPCEAXxpVF9Yo1g5oLgcuwEjeHWzCQVbG";
 
-export const listingPDA_1 = "EhTwCFi6Hzb6XoJWkPs8jwX41uwxWo7L4UawcN7bRyPw";
-export const listingPDA_2 = "DLzxjBtvtFrDFiGs9b2cXHpRdfUnfMT59C66YrmUw7vL";
-export const listingPDA_3 = "Cd45eo4diwvPVDdGKooR37wSZzizGxkbFPe7hBtz1tV4";
-export const listingPDA_4 = "DrrkD6cyMLfN1sq6UiErEcdV8LL4WjqiP4L7eN6srRk5";
-export const listingPDA_5 = "Afg4eMpM65CQsjYns92NoVgCfcfMfLJNHCBr1Uc3w8Hg";
-export const listingPDA_6 = "BdNQndbPavs4y3YfxEQQffKy7ykGYLCT5W96f7XcahTe";
-export const hostPDA = "DCZN4wUQxAa8T5XWckyjshPt2EUwLmRnyYx5arLhoXDd";
+export const listingPDA_1 = "59fa6qB4kjpM8vkTCZbTj1JHcHgJbD5z27WmehsKtkv9";
+export const listingPDA_2 = "Hoo2ESnm1ViQAPMjtLk7ACkoENoUCQQMH9FDo3v9wLPj";
+export const listingPDA_3 = "F1gbgjfzzoBDp1TdgpAXGGMDVXuZwZCKXZhijE6h8oCM";
+export const listingPDA_4 = "324nPsBSYsRLnYJKtk3QFK29jyvi3VRQxTkaLw9fvQEX";
+export const listingPDA_5 = "FfuPQiX9pdRypQKeHGNmMajELcJK1254GfaDyQ5qbvyo";
+export const listingPDA_6 = "7fzMi5MWaGkCVRHNMoT2y1KpRWRyQnC2yqUKYEEGuNxV";
 
 
-export const RPC = "http://127.0.0.1:8899" // TODO: use env
+
+
+
+export const hostPDA = "tB3gCNRGrW2vVb7Tf5wPgAwFxuidjUNyEfikZKsSoo4";
+
+// https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/
+// https://api.devnet.solana.com
+export const RPC = "https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/"
 
 // Helper function to get all listing PDAs dynamically
 export const getAllListingPDAs = (): string[] => {

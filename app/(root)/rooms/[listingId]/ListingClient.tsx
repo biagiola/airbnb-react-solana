@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { SafeListing, SafeResevations, SafeUser } from "@/app/types";
@@ -8,11 +7,11 @@ import ClientOnly from "@/app/components/ClientOnly";
 import ListingBody from "@/app/components/listing/ListingBody";
 import ListingHeader from "@/app/components/listing/ListingHeader";
 import useGetCountries from "@/app/hooks/useGetCountries";
-import useLoginModal from "@/app/hooks/useLoginModal";
+import usePaymentModal from "@/app/hooks/usePaymentModal";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { categories } from "@/app/components/navbar/categories/CategoriesContainer";
-import getReservation from "@/app/actions/getReservations";
-import { loadStripe } from "@stripe/stripe-js";
+import PaymentModal from "@/app/components/modals/PaymentModal";
+import createReservation from "@/app/actions/anchor/createReservation";
 
 const initialRange = {
   startDate: new Date(),
@@ -34,7 +33,7 @@ const ListingClient: FC<ListingClientProps> = ({
   reservations = [],
 }) => {
   const { getCountry } = useGetCountries();
-  const loginModal = useLoginModal();
+  const paymentModal = usePaymentModal();
   const location = getCountry(listing.locationValue);
   const category = useMemo(() => {
     return categories.find((item) => item.label === listing.category);
@@ -58,39 +57,54 @@ const ListingClient: FC<ListingClientProps> = ({
   const [totalPrice, setTotalPrice] = useState(listing.price);
   const [dateRange, setDateRange] = useState(initialRange);
 
-  const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-  );
+  // Check if wallet is connected (you might want to get this from a different source)
+  const isWalletConnected = () => {
+    return window.solana?.isConnected || false;
+  };
 
-  const onReservation = useCallback(async () => {
-    if (!currentUser) return loginModal.onOpen();
+  const onReservation = useCallback(() => {
+    // Check if wallet is connected - if not, prompt user to connect
+    if (!isWalletConnected()) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
 
-    setLoading(true);
+    // Open the payment modal instead of making API call
+    paymentModal.onOpen();
+  }, [paymentModal]);
 
+  // Blockchain reservation creation handler
+  const handleBlockchainPayment = useCallback(async () => {
     try {
-      const response = await axios.post("/api/create-stripe-session", {
+      const result = await createReservation({
         listingId: listing.id,
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
-        price: totalPrice,
-        userId: currentUser.id,
+        userId: "wallet-user", // We'll use wallet address
+        authorId: "blockchain-auth"
       });
 
-      const { sessionId } = response.data;
-
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error("Stripe failed to load");
-
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) {
-        toast.error(error.message || "Failed to initiate payment");
-        setLoading(false);
-      }
+      console.log("Blockchain reservation created:", result);
+      return result; // Return the reservation data to PaymentModal
     } catch (error) {
-      toast.error("Failed to initiate payment");
-      setLoading(false);
+      console.error("Blockchain reservation failed:", error);
+      throw error;
     }
-  }, [totalPrice, dateRange, listing.id, currentUser, loginModal]);
+  }, [listing.id]);
+
+  // Final payment handler (escrow payment)
+  const handleFinalPayment = useCallback(async (): Promise<void> => {
+    try {
+      console.log("💳 Processing final payment escrow...");
+      // TODO: Implement payment escrow logic here
+      // This will call initialize_payment_escrow on the blockchain
+      
+      // For now, just simulate success
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log("✅ Payment escrow completed");
+    } catch (error) {
+      console.error("Final payment failed:", error);
+      throw error;
+    }
+  }, []);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
@@ -123,6 +137,18 @@ const ListingClient: FC<ListingClientProps> = ({
           loading={loading}
         />
       </div>
+      
+      <PaymentModal
+        totalPrice={totalPrice}
+        startDate={dateRange.startDate || new Date()}
+        endDate={dateRange.endDate || new Date()}
+        guestCount={listing.guestCount}
+        listingTitle={listing.title}
+        pricePerNight={listing.price}
+        totalNights={differenceInCalendarDays(dateRange.endDate || new Date(), dateRange.startDate || new Date()) || 1}
+        onCreateReservation={handleBlockchainPayment}
+        onPayment={handleFinalPayment}
+      />
     </ClientOnly>
   );
 };

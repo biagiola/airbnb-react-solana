@@ -4,8 +4,14 @@ import {
   hostPDA,
   guestPDA,
   listingPDA_1,
-  parseListingAccount
+  parseListingAccount,
+  RPC
 } from "@/app/actions/anchor/constants";
+import { 
+  CreateReservationResult, 
+  ReservationStatus, 
+  PaymentStatus 
+} from "@/app/types/blockchain";
 
 interface reservationParams {
   listingId?: string
@@ -13,7 +19,7 @@ interface reservationParams {
   authorId?: string
 }
 
-export default async function createReservation(params: reservationParams) {
+export default async function createReservation(params: reservationParams): Promise<CreateReservationResult> {
   try {
     const { listingId, userId, authorId } = params;
 
@@ -39,7 +45,7 @@ export default async function createReservation(params: reservationParams) {
         guestPubkey.toBuffer(),
         reservationIdBuffer
       ],
-      new PublicKey("9fD3JVVmbzGC66pTYb5xZCXc24ibEYcM8vMrWoQjMfW5") // Your actual program ID
+      new PublicKey("5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9") // Your actual program ID
     );
 
     console.log("🏨 Creating reservation with:");
@@ -67,9 +73,9 @@ export default async function createReservation(params: reservationParams) {
     console.log(`   Total: $${totalPrice}`);
 
     // TODO: Implement actual blockchain transaction
-    // For now, return the calculated data
+    // For now, return the calculated data with proper typing
     
-    return {
+    const result: CreateReservationResult = {
       success: true,
       reservationId: reservation_id,
       reservationPDA: reservationPDA.toString(),
@@ -83,10 +89,13 @@ export default async function createReservation(params: reservationParams) {
         totalNights,
         pricePerNight,
         totalPrice,
-        status: "pending",
-        paymentStatus: "pending"
+        status: ReservationStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+        createdAt: now
       }
     };
+
+    return result;
 
   } catch (error: any) {
     console.error("❌ Error creating reservation:", error);
