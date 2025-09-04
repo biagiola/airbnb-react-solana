@@ -1,7 +1,5 @@
 import React from "react"
-// import getCurrentListing from "@/app/actions/getCurrentListing"
-// import getReservation from "@/app/actions/getReservations"
-// import getCurrentUser from "@/app/actions/getCurrentUser"
+
 
 import getCurrentListing from "@/app/actions/anchor/getCurrentListing"
 import createReservation from "@/app/actions/anchor/createReservation"
@@ -15,10 +13,6 @@ interface IParams {
 }
 
 const page = async ({ params } : { params: IParams}) => {
-  // const listing = await getCurrentListing(params);
-  // const reservations = await getReservation(params);
-  // const currentUser = await getCurrentUser();
-
   const listing = await getCurrentListing(params);
   const reservations = await createReservation(params);
   const currentUser = await getCurrentUser();

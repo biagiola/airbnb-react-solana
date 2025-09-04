@@ -3,7 +3,7 @@
 This is a decentralized Airbnb clone built using **Next.js** for the frontend and **Solana blockchain** for the backend. The project combines modern web development with blockchain technology to create a trustless, decentralized accommodation booking platform.
 
 
-**Note**: This project is in active development. The blockchain integration is experimental and should not be used for production deployments without thorough testing and security audits. 
+**Note**: This project is in active development. The blockchain integration is experimental and was deployed for devnet usage. The frontend needs to be run on localhost.
 
 **Current Status**: 
 - Host and Guest accounts are created from the test files
