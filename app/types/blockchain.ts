@@ -14,6 +14,46 @@ export enum PaymentStatus {
   FAILED = "failed"
 }
 
+// Solana Wallet Interface
+export interface SolanaWallet {
+  // Connection methods
+  connect: (params?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: { toBytes(): Uint8Array } }>;
+  disconnect: () => Promise<void>;
+  
+  // Transaction signing methods
+  signTransaction: (transaction: any) => Promise<any>;
+  signAllTransactions: (transactions: any[]) => Promise<any[]>;
+  signAndSendTransaction: (transaction: any) => Promise<{ signature: string }>;
+  
+  // Message signing
+  signMessage: (message: Uint8Array) => Promise<{ signature: Uint8Array }>;
+  
+  // Request method for RPC calls
+  request: (method: string, params?: any) => Promise<any>;
+  
+  // Bridge and messaging
+  openBridge: () => void;
+  postMessage: (message: any) => void;
+  
+  // Properties
+  isPhantom: boolean;
+  publicKey: { toBytes(): Uint8Array } | null;
+}
+
+// Window augmentation for global solana wallet
+declare global {
+  interface Window {
+    solana?: SolanaWallet;
+  }
+}
+
+export interface PaymentEscrowParams {
+  reservationPDA: string;
+  amount: number;
+  releaseDate: number;
+  escrowId: number;
+}
+
 export interface ReservationDetails {
   guest: string;          // Pubkey as string
   host: string;           // Pubkey as string

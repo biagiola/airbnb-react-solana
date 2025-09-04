@@ -12,6 +12,8 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { categories } from "@/app/components/navbar/categories/CategoriesContainer";
 import PaymentModal from "@/app/components/modals/PaymentModal";
 import createReservation from "@/app/actions/anchor/createReservation";
+import createPaymentEscrow from "@/app/actions/anchor/createPaymentEscrow";
+import { CreateReservationResult } from "@/app/types/blockchain";
 
 const initialRange = {
   startDate: new Date(),
@@ -42,6 +44,9 @@ const ListingClient: FC<ListingClientProps> = ({
   const [localReservations, setLocalReservations] = useState(reservations);
   const [loading, setLoading] = useState(false);
 
+  const [reservationData, setReservationData] = useState<CreateReservationResult | null>(null);
+  const [reservationLoading, setReservationLoading] = useState(false);
+
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
     localReservations.forEach((reservation: any) => {
@@ -59,7 +64,7 @@ const ListingClient: FC<ListingClientProps> = ({
 
   // Check if wallet is connected (you might want to get this from a different source)
   const isWalletConnected = () => {
-    return window.solana?.isConnected || false;
+    return window.solana?.isPhantom || false;
   };
 
   const onReservation = useCallback(() => {
@@ -73,38 +78,57 @@ const ListingClient: FC<ListingClientProps> = ({
     paymentModal.onOpen();
   }, [paymentModal]);
 
-  // Blockchain reservation creation handler
-  const handleBlockchainPayment = useCallback(async () => {
-    try {
-      const result = await createReservation({
-        listingId: listing.id,
-        userId: "wallet-user", // We'll use wallet address
-        authorId: "blockchain-auth"
-      });
+  useEffect(() => {
+    const autoCreateReservation = async () => {
+      if (paymentModal.isOpen && !reservationData && !reservationLoading) {
+        setReservationLoading(true);
+        
+        try {
+          console.log("🚀 Auto-creating reservation...");
+          const result = await createReservation({
+            listingId: listing.id,
+            userId: "wallet-user", // We'll use wallet address
+            authorId: "blockchain-auth"
+          });
+          setReservationData(result);
+          console.log("✅ Reservation created automatically:", result);
+        } catch (err: any) {
+          console.error("❌ Auto-reservation failed:", err);
+          toast.error(`Failed to create reservation: ${err.message}`);
+        } finally {
+          setReservationLoading(false);
+        }
+      }
+    };
 
-      console.log("Blockchain reservation created:", result);
-      return result; // Return the reservation data to PaymentModal
-    } catch (error) {
-      console.error("Blockchain reservation failed:", error);
-      throw error;
-    }
-  }, [listing.id]);
+    autoCreateReservation();
+  }, [paymentModal.isOpen, reservationData, reservationLoading, listing.id]);
 
-  // Final payment handler (escrow payment)
   const handleFinalPayment = useCallback(async (): Promise<void> => {
+    if (!reservationData) {
+      throw new Error("No reservation data available for payment");
+    }
+  
     try {
       console.log("💳 Processing final payment escrow...");
-      // TODO: Implement payment escrow logic here
-      // This will call initialize_payment_escrow on the blockchain
       
-      // For now, just simulate success
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log("✅ Payment escrow completed");
+      // Call the blockchain payment escrow
+      const escrowResult = await createPaymentEscrow({
+        reservationPDA: reservationData.reservationPDA,
+        amount: reservationData.details.totalPrice,
+        releaseDate: reservationData.details.endDate + (24 * 60 * 60), // Release 1 day after checkout
+        escrowId: Date.now(), // Use timestamp as unique escrow ID
+      });
+  
+      console.log("✅ Payment escrow completed:", escrowResult);
+      
+      // Reset reservation data for next use
+      setReservationData(null);
     } catch (error) {
       console.error("Final payment failed:", error);
       throw error;
     }
-  }, []);
+  }, [reservationData]);
 
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
@@ -146,8 +170,9 @@ const ListingClient: FC<ListingClientProps> = ({
         listingTitle={listing.title}
         pricePerNight={listing.price}
         totalNights={differenceInCalendarDays(dateRange.endDate || new Date(), dateRange.startDate || new Date()) || 1}
-        onCreateReservation={handleBlockchainPayment}
         onPayment={handleFinalPayment}
+        reservationData={reservationData}
+        reservationLoading={reservationLoading}
       />
     </ClientOnly>
   );

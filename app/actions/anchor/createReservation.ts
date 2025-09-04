@@ -1,4 +1,3 @@
-
 import { Connection, PublicKey } from "@solana/web3.js";
 import {
   hostPDA,
@@ -45,7 +44,7 @@ export default async function createReservation(params: reservationParams): Prom
         guestPubkey.toBuffer(),
         reservationIdBuffer
       ],
-      new PublicKey("5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9") // Your actual program ID
+      new PublicKey("5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9") // actual program ID
     );
 
     console.log("🏨 Creating reservation with:");

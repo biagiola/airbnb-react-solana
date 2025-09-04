@@ -10,15 +10,20 @@ export const listingPDA_4 = "324nPsBSYsRLnYJKtk3QFK29jyvi3VRQxTkaLw9fvQEX";
 export const listingPDA_5 = "FfuPQiX9pdRypQKeHGNmMajELcJK1254GfaDyQ5qbvyo";
 export const listingPDA_6 = "7fzMi5MWaGkCVRHNMoT2y1KpRWRyQnC2yqUKYEEGuNxV";
 
-
-
-
-
 export const hostPDA = "tB3gCNRGrW2vVb7Tf5wPgAwFxuidjUNyEfikZKsSoo4";
 
 // https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/
 // https://api.devnet.solana.com
-export const RPC = "https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/"
+// export const RPC = "https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/"
+export const RPC = "https://api.devnet.solana.com/"
+
+export const HOST_SEED = "HOST_SEED";
+export const GUEST_SEED = "GUEST_SEED";
+export const LISTING_SEED = "LISTING_SEED";
+export const RESERVATION_SEED = "RESERVATION_SEED";
+export const PAYMENT_ESCROW_SEED = "PAYMENT_ESCROW_SEED";
+export const PLATFORM_TREASURY_SEED = "PLATFORM_TREASURY_SEED";
+export const PROGRAM_ID = "5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9"; // devnet
 
 // Helper function to get all listing PDAs dynamically
 export const getAllListingPDAs = (): string[] => {

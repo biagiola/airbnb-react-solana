@@ -3,9 +3,9 @@
 import usePaymentModal from "@/app/hooks/usePaymentModal";
 import Button from "../Button";
 import Modal from "./Modal";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+
 import Heading from "../Heading";
 import { BiMoney } from "react-icons/bi";
 import { MdDateRange } from "react-icons/md";
@@ -20,8 +20,9 @@ interface PaymentModalProps {
   listingTitle: string;
   pricePerNight: number;
   totalNights: number;
-  onCreateReservation: () => Promise<CreateReservationResult>; // Returns reservation data
   onPayment: () => Promise<void>; // Final payment processing
+  reservationData: CreateReservationResult | null;
+  reservationLoading: boolean;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -32,40 +33,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   listingTitle,
   pricePerNight,
   totalNights,
-  onCreateReservation,
   onPayment,
+  reservationData,
+  reservationLoading,
 }) => {
   const paymentModal = usePaymentModal();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  
-  // Reservation state
-  const [reservationData, setReservationData] = useState<CreateReservationResult | null>(null);
-  const [reservationLoading, setReservationLoading] = useState(false);
-
-  // Auto-create reservation when modal opens
-  useEffect(() => {
-    const createReservation = async () => {
-      if (paymentModal.isOpen && !reservationData && !reservationLoading) {
-        setReservationLoading(true);
-        setError("");
-        
-        try {
-          console.log("🚀 Auto-creating reservation...");
-          const result = await onCreateReservation();
-          setReservationData(result);
-          console.log("✅ Reservation created automatically:", result);
-        } catch (err: any) {
-          console.error("❌ Auto-reservation failed:", err);
-          setError(`Failed to create reservation: ${err.message}`);
-        } finally {
-          setReservationLoading(false);
-        }
-      }
-    };
-
-    createReservation();
-  }, [paymentModal.isOpen, reservationData, reservationLoading, onCreateReservation]);
 
   const submitHandler = async () => {
     if (!reservationData) {
@@ -82,8 +56,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       toast.success("Payment successful! Reservation confirmed.");
       paymentModal.onClose();
       
-      // Reset reservation data for next use
-      setReservationData(null);
+      // 🔥 REMOVED: Reset logic moved to parent ListingClient
     } catch (err: any) {
       console.error("Payment failed:", err);
       setError(err.message || "Payment failed. Please try again.");
