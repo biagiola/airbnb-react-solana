@@ -19,7 +19,6 @@ export interface Iparams {
 }
 
 export default async function getListings_(searchParams: any) {
-	console.log("searchParams: ", searchParams);
 	try {
 		const connection = new Connection(RPC, "confirmed"); 
 		
@@ -31,7 +30,7 @@ export default async function getListings_(searchParams: any) {
 			return [];
 		}
 
-		// Fetch all listings in parallel
+		// Fetch all listings created by the host
 		const listingPromises = allListingPDAs.map(async (pdaAddress, index) => {
 			try {
 				console.log(`Fetching listing ${index + 1}: ${pdaAddress}`);

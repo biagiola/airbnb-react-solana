@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 export const guestPDA = "583VKRJMoibV11NXxAaMaV6qYgA8hxT44nC2gLjRnLym";
 export const mintPubkey = "C3TMMfUdiLtzPCEAXxpVF9Yo1g5oLgcuwEjeHWzCQVbG";
 
+// List of listing created by the only host on devnet
 export const listingPDA_1 = "59fa6qB4kjpM8vkTCZbTj1JHcHgJbD5z27WmehsKtkv9";
 export const listingPDA_2 = "Hoo2ESnm1ViQAPMjtLk7ACkoENoUCQQMH9FDo3v9wLPj";
 export const listingPDA_3 = "F1gbgjfzzoBDp1TdgpAXGGMDVXuZwZCKXZhijE6h8oCM";
@@ -25,22 +26,16 @@ export const PAYMENT_ESCROW_SEED = "PAYMENT_ESCROW_SEED";
 export const PLATFORM_TREASURY_SEED = "PLATFORM_TREASURY_SEED";
 export const PROGRAM_ID = "5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9"; // devnet
 
-// Helper function to get all listing PDAs dynamically
+// Helper function to get all listing PDAs
 export const getAllListingPDAs = (): string[] => {
-  const listingPDAs: string[] = [];
-  
-  // Get all exported listing PDAs dynamically
-  const constantsModule = require('./constants');
-  Object.keys(constantsModule).forEach(key => {
-    if (key.startsWith('listingPDA_')) {
-      const value = constantsModule[key];
-      if (value && value !== "") {
-        listingPDAs.push(value);
-      }
-    }
-  });
-  
-  return listingPDAs;
+  return [
+    listingPDA_1,
+    listingPDA_2,
+    listingPDA_3,
+    listingPDA_4,
+    listingPDA_5,
+    listingPDA_6
+  ].filter(Boolean);
 };
 
 // Helper functions to parse account data from Solana
