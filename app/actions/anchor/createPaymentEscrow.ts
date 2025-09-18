@@ -21,37 +21,18 @@ import {
 	CreatePaymentEscrowResult,
 	PaymentEscrowParams
 } from "@/app/types/blockchain";
-import { BN, Program, AnchorProvider, web3, setProvider, getProvider } from "@coral-xyz/anchor";
+import {
+	BN,
+	Program,
+	AnchorProvider,
+	setProvider,
+	getProvider,
+	Idl,
+} from "@coral-xyz/anchor";
+import idl from '../../../airbnb-blockhain/target/idl/airbnb_blockhain.json';
 
 // Platform treasury address from devnet tests
 const PLATFORM_TREASURY_ATA = "2dsUgCKvJM12fRXKK4ZpTdyyF3AatznAbuf33urv1nd5";
-
-// Simple IDL without programId - we'll handle that separately
-const AIRBNB_IDL = {
-  "version": "0.1.0",
-  "name": "airbnb_blockhain",
-  "instructions": [
-    {
-      "name": "initializePaymentEscrow",
-      "accounts": [
-        { "name": "guestAuthority", "isMut": true, "isSigner": true },
-        { "name": "reservation", "isMut": false, "isSigner": false },
-        { "name": "paymentEscrow", "isMut": true, "isSigner": false },
-        { "name": "mint", "isMut": false, "isSigner": false },
-        { "name": "guestTokenAccount", "isMut": true, "isSigner": false },
-        { "name": "platformTreasury", "isMut": true, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
-      ],
-      "args": [
-        { "name": "escrowId", "type": "u64" },
-        { "name": "amount", "type": "u64" },
-        { "name": "releaseDate", "type": "u64" }
-      ]
-    }
-  ]
-};
 
 export default async function createPaymentEscrow(params: PaymentEscrowParams): Promise<CreatePaymentEscrowResult> {
 	try {
@@ -97,16 +78,13 @@ export default async function createPaymentEscrow(params: PaymentEscrowParams): 
 		// Try using setProvider approach which is more stable
 		setProvider(provider);
 		
-		// Create IDL with programId as PublicKey object
-		const idlWithProgramId = {
-			...AIRBNB_IDL,
-			programId: new PublicKey(PROGRAM_ID)
-		};
-		
 		console.log("🔍 Using setProvider approach");
 		console.log("🔍 PROGRAM_ID constant:", PROGRAM_ID);
 
-		const program = new Program(idlWithProgramId as any);
+		const program = new Program(
+			idl as Idl,
+			provider
+		) as Program; // Type assertion to Program
 
 		// Generate Payment Escrow PDA
 		const escrowIdBuffer = Buffer.alloc(8);
