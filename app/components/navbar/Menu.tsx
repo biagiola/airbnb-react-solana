@@ -20,7 +20,6 @@ declare global {
   }
 }
 
-
 import Avatar from "../Avatar";
 import MenuItems from "./MenuItems";
 import { LuGlobe } from "react-icons/lu";
@@ -31,7 +30,6 @@ import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import { useRouter } from "next/navigation";
-
 
 interface MenuProps {
   currentUser?: SafeUser | null;
@@ -48,7 +46,7 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
   const [ownerPK, setOwnerPK] = useState("");
 
   const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => !prev);
+    setIsOpen(prev => !prev);
   }, []);
 
   // Function to shorten the public key for display
@@ -83,29 +81,29 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
-  
+
   const handleConnect = async () => {
     const provider = window.solana;
-    
+
     console.log("handleConnect isPhatom", provider.isPhantom);
-  
+
     try {
       if (provider && provider.isPhantom) {
         await window.solana.connect();
         const owner: string = await window.solana.publicKey.toString();
         const ownerPk = new PublicKey(owner);
-  
-        console.log('handleConnect owner: ', owner);
+
+        console.log("handleConnect owner: ", owner);
         setOwnerPK(owner);
       } else {
-        console.log('provider does not exists');
+        console.log("provider does not exists");
       }
     } catch (error) {
       console.log(error);
     }
 
     setIsOpen(false);
-  }
+  };
 
   return (
     <div
@@ -182,12 +180,7 @@ const Menu: React.FC<MenuProps> = ({ currentUser }) => {
                 label="Sign up"
                 bold
               /> */}
-              <MenuItems
-                onClick={handleConnect}
-                label="Log in"
-                border
-                bold
-              />
+              <MenuItems onClick={handleConnect} label="Log in" border bold />
             </>
           )}
         </div>

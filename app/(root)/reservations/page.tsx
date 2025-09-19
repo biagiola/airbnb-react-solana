@@ -17,7 +17,7 @@ export default async function Reservations() {
       <main className="pb-20 px-5 phone:px-10 max-w-6xl mx-auto large:px-10">
         <Heading title="My Reservations" />
         <div className="grid  gap-8">
-          {reservations?.map((reservation) => (
+          {reservations?.map(reservation => (
             <ReservationInfoCard
               key={reservation.id}
               reservation={reservation}

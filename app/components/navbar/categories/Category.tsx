@@ -1,34 +1,33 @@
-"use client"
+"use client";
 
-import { IconType } from "react-icons"
-import { useRouter, useSearchParams } from "next/navigation"
-import qs from "query-string"
-import { useCallback } from "react"
+import { IconType } from "react-icons";
+import { useRouter, useSearchParams } from "next/navigation";
+import qs from "query-string";
+import { useCallback } from "react";
 
 interface CategoryProps {
-  label: string
-  icon: IconType
-  selected: boolean
+  label: string;
+  icon: IconType;
+  selected: boolean;
 }
 
 const Category: React.FC<CategoryProps> = ({ label, icon: Icon, selected }) => {
-  const router = useRouter()
-  const params = useSearchParams()
+  const router = useRouter();
+  const params = useSearchParams();
 
   const handleClick = useCallback(() => {
-  
-    let currentQuery = {}
+    let currentQuery = {};
 
-    if(params) {
-      currentQuery = qs.parse(params.toString())
+    if (params) {
+      currentQuery = qs.parse(params.toString());
     }
 
     const updatedQuery: any = {
       ...currentQuery,
-      category: label
-    }
+      category: label,
+    };
 
-    if (params?.get('category') === label) {
+    if (params?.get("category") === label) {
       delete updatedQuery.category;
     }
 
@@ -38,9 +37,9 @@ const Category: React.FC<CategoryProps> = ({ label, icon: Icon, selected }) => {
         query: updatedQuery,
       },
       { skipNull: true }
-    )
-    router.push(url)
-  }, [label, router, params])
+    );
+    router.push(url);
+  }, [label, router, params]);
 
   return (
     <div
@@ -57,7 +56,7 @@ const Category: React.FC<CategoryProps> = ({ label, icon: Icon, selected }) => {
         <span className="absolute w-full h-[2px] bg-dark-gray bottom-0"></span>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Category
+export default Category;

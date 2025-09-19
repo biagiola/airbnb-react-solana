@@ -72,7 +72,7 @@ const LoginModal = () => {
       <Heading title="Welcome to Airbnb" />
       <form
         className="flex flex-col gap-5 border-b pb-10"
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           if (!loading) submitHandler();
         }}

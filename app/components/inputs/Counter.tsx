@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useCallback } from "react"
-import { CiCircleMinus, CiCirclePlus } from "react-icons/ci"
+import { useCallback } from "react";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 interface CounterProps {
-  label: string
-  value: number
-  onChange: (value: number) => void
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
 }
 
 const Counter: React.FC<CounterProps> = ({ label, value, onChange }) => {
   const add = useCallback(() => {
-    onChange(value + 1)
-  }, [value, onChange])
+    onChange(value + 1);
+  }, [value, onChange]);
 
   const reduce = useCallback(() => {
     if (value <= 1) {
-        return
+      return;
     }
-    onChange(value - 1)
-  }, [value, onChange])
+    onChange(value - 1);
+  }, [value, onChange]);
 
   return (
     <div className="flex items-center justify-between py-5">
@@ -36,7 +36,7 @@ const Counter: React.FC<CounterProps> = ({ label, value, onChange }) => {
         </span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Counter
+export default Counter;

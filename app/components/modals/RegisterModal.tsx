@@ -76,7 +76,7 @@ const RegisterModal = () => {
       <form
         className="flex flex-col gap-5 border-b pb-10"
         autoComplete="off"
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           if (!loading) submitHandler();
         }}

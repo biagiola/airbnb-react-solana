@@ -16,7 +16,7 @@ export const hostPDA = "tB3gCNRGrW2vVb7Tf5wPgAwFxuidjUNyEfikZKsSoo4";
 // https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/
 // https://api.devnet.solana.com
 // export const RPC = "https://alien-intensive-yard.solana-devnet.quiknode.pro/08ee72b127a316bc7a005568c31191070e8e8612/"
-export const RPC = "https://api.devnet.solana.com/"
+export const RPC = "https://api.devnet.solana.com/";
 
 export const HOST_SEED = "HOST_SEED";
 export const GUEST_SEED = "GUEST_SEED";
@@ -34,14 +34,17 @@ export const getAllListingPDAs = (): string[] => {
     listingPDA_3,
     listingPDA_4,
     listingPDA_5,
-    listingPDA_6
+    listingPDA_6,
   ].filter(Boolean);
 };
 
 // Helper functions to parse account data from Solana
-export const parseString = (data: Buffer, offset: number): { value: string, nextOffset: number } => {
+export const parseString = (
+  data: Buffer,
+  offset: number
+): { value: string; nextOffset: number } => {
   const length = data.readUInt32LE(offset);
-  const value = data.slice(offset + 4, offset + 4 + length).toString('utf8');
+  const value = data.slice(offset + 4, offset + 4 + length).toString("utf8");
   return { value, nextOffset: offset + 4 + length };
 };
 
@@ -51,7 +54,9 @@ export const parseGuestAccount = (accountData: Buffer) => {
   let offset = 0;
 
   // Parse guest_author (32 bytes)
-  const guest_author = new PublicKey(data.slice(offset, offset + 32)).toString();
+  const guest_author = new PublicKey(
+    data.slice(offset, offset + 32)
+  ).toString();
   offset += 32;
 
   // Parse name (4 bytes length + string data)
@@ -105,84 +110,84 @@ export const parseGuestAccount = (accountData: Buffer) => {
     phone_number,
     date_of_birth: Number(date_of_birth),
     preferred_language,
-    bump
+    bump,
   };
 };
 
 export const parseListingAccount = (accountData: Buffer) => {
-	// Skip first 8 bytes (discriminator)
-	const data = accountData.slice(8);
-	let offset = 0;
+  // Skip first 8 bytes (discriminator)
+  const data = accountData.slice(8);
+  let offset = 0;
 
-	// Parse host (32 bytes)
-	const host = new PublicKey(data.slice(offset, offset + 32)).toString();
-	offset += 32;
+  // Parse host (32 bytes)
+  const host = new PublicKey(data.slice(offset, offset + 32)).toString();
+  offset += 32;
 
-	// Parse title (4 bytes length + string data)
-	const titleResult = parseString(data, offset);
-	const title = titleResult.value;
-	offset = titleResult.nextOffset;
+  // Parse title (4 bytes length + string data)
+  const titleResult = parseString(data, offset);
+  const title = titleResult.value;
+  offset = titleResult.nextOffset;
 
-	// Parse description (4 bytes length + string data)
-	const descriptionResult = parseString(data, offset);
-	const description = descriptionResult.value;
-	offset = descriptionResult.nextOffset;
+  // Parse description (4 bytes length + string data)
+  const descriptionResult = parseString(data, offset);
+  const description = descriptionResult.value;
+  offset = descriptionResult.nextOffset;
 
-	// Parse image_url (4 bytes length + string data)
-	const imageResult = parseString(data, offset);
-	const image_url = imageResult.value;
-	offset = imageResult.nextOffset;
+  // Parse image_url (4 bytes length + string data)
+  const imageResult = parseString(data, offset);
+  const image_url = imageResult.value;
+  offset = imageResult.nextOffset;
 
-	// Parse created_at (8 bytes)
-	const created_at = data.readBigUInt64LE(offset);
-	offset += 8;
+  // Parse created_at (8 bytes)
+  const created_at = data.readBigUInt64LE(offset);
+  offset += 8;
 
-	// Parse category (4 bytes length + string data)
-	const categoryResult = parseString(data, offset);
-	const category = categoryResult.value;
-	offset = categoryResult.nextOffset;
+  // Parse category (4 bytes length + string data)
+  const categoryResult = parseString(data, offset);
+  const category = categoryResult.value;
+  offset = categoryResult.nextOffset;
 
-	// Parse room_count (1 byte)
-	const room_count = data.readUInt8(offset);
-	offset += 1;
+  // Parse room_count (1 byte)
+  const room_count = data.readUInt8(offset);
+  offset += 1;
 
-	// Parse bathroom_count (1 byte)
-	const bathroom_count = data.readUInt8(offset);
-	offset += 1;
+  // Parse bathroom_count (1 byte)
+  const bathroom_count = data.readUInt8(offset);
+  offset += 1;
 
-	// Parse guest_count (1 byte)
-	const guest_count = data.readUInt8(offset);
-	offset += 1;
+  // Parse guest_count (1 byte)
+  const guest_count = data.readUInt8(offset);
+  offset += 1;
 
-	// Parse location_value (4 bytes length + string data)
-	const locationResult = parseString(data, offset);
-	const location_value = locationResult.value;
-	offset = locationResult.nextOffset;
+  // Parse location_value (4 bytes length + string data)
+  const locationResult = parseString(data, offset);
+  const location_value = locationResult.value;
+  offset = locationResult.nextOffset;
 
-	// Parse total_bookings (8 bytes)
-	const total_bookings = data.readBigUInt64LE(offset);
-	offset += 8;
+  // Parse total_bookings (8 bytes)
+  const total_bookings = data.readBigUInt64LE(offset);
+  offset += 8;
 
-	// Parse is_active (1 byte)
-	const is_active = data.readUInt8(offset) === 1;
-	offset += 1;
+  // Parse is_active (1 byte)
+  const is_active = data.readUInt8(offset) === 1;
+  offset += 1;
 
-	// Parse price (8 bytes)
-	const price = data.readBigUInt64LE(offset);
+  // Parse price (8 bytes)
+  const price = data.readBigUInt64LE(offset);
 
-	return {
-		host,
-		title,
-		description,
-		image_url,
-		created_at: Number(created_at),
-		category,
-		room_count,
-		bathroom_count,
-		guest_count,
-		location_value,
-		total_bookings: Number(total_bookings),
-		is_active,
-		price: Number(price)
-	};
+  return {
+    host,
+    title,
+    description,
+    image_url,
+    created_at: Number(created_at),
+    category,
+    room_count,
+    bathroom_count,
+    guest_count,
+    location_value,
+    total_bookings: Number(total_bookings),
+    is_active,
+    price: Number(price),
+  };
 };

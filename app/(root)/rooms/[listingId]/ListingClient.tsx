@@ -38,13 +38,14 @@ const ListingClient: FC<ListingClientProps> = ({
   const paymentModal = usePaymentModal();
   const location = getCountry(listing.locationValue);
   const category = useMemo(() => {
-    return categories.find((item) => item.label === listing.category);
+    return categories.find(item => item.label === listing.category);
   }, [listing.category]);
 
   const [localReservations, setLocalReservations] = useState(reservations);
   const [loading, setLoading] = useState(false);
 
-  const [reservationData, setReservationData] = useState<CreateReservationResult | null>(null);
+  const [reservationData, setReservationData] =
+    useState<CreateReservationResult | null>(null);
   const [reservationLoading, setReservationLoading] = useState(false);
 
   const disabledDates = useMemo(() => {
@@ -82,13 +83,13 @@ const ListingClient: FC<ListingClientProps> = ({
     const autoCreateReservation = async () => {
       if (paymentModal.isOpen && !reservationData && !reservationLoading) {
         setReservationLoading(true);
-        
+
         try {
           console.log("🚀 Auto-creating reservation...");
           const result = await createReservation({
             listingId: listing.id,
             userId: "wallet-user", // We'll use wallet address
-            authorId: "blockchain-auth"
+            authorId: "blockchain-auth",
           });
           setReservationData(result);
           console.log("✅ Reservation created automatically:", result);
@@ -108,20 +109,20 @@ const ListingClient: FC<ListingClientProps> = ({
     if (!reservationData) {
       throw new Error("No reservation data available for payment");
     }
-  
+
     try {
       console.log("💳 Processing final payment escrow...");
-      
+
       // Call the blockchain payment escrow
       const escrowResult = await createPaymentEscrow({
         reservationPDA: reservationData.reservationPDA,
         amount: reservationData.details.totalPrice,
-        releaseDate: reservationData.details.endDate + (24 * 60 * 60), // Release 1 day after checkout
+        releaseDate: reservationData.details.endDate + 24 * 60 * 60, // Release 1 day after checkout
         escrowId: Date.now(), // Use timestamp as unique escrow ID
       });
-  
+
       console.log("✅ Payment escrow completed:", escrowResult);
-      
+
       // Reset reservation data for next use
       setReservationData(null);
     } catch (error) {
@@ -150,7 +151,7 @@ const ListingClient: FC<ListingClientProps> = ({
       <div className="phone:px-10 py-10 max-w-6xl mx-auto">
         <ListingBody
           totalPrice={totalPrice}
-          onDateChange={(value) => setDateRange(value)}
+          onDateChange={value => setDateRange(value)}
           dateRange={dateRange}
           onSubmit={onReservation}
           currentUser={currentUser}
@@ -161,7 +162,7 @@ const ListingClient: FC<ListingClientProps> = ({
           loading={loading}
         />
       </div>
-      
+
       <PaymentModal
         totalPrice={totalPrice}
         startDate={dateRange.startDate || new Date()}
@@ -169,7 +170,12 @@ const ListingClient: FC<ListingClientProps> = ({
         guestCount={listing.guestCount}
         listingTitle={listing.title}
         pricePerNight={listing.price}
-        totalNights={differenceInCalendarDays(dateRange.endDate || new Date(), dateRange.startDate || new Date()) || 1}
+        totalNights={
+          differenceInCalendarDays(
+            dateRange.endDate || new Date(),
+            dateRange.startDate || new Date()
+          ) || 1
+        }
         onPayment={handleFinalPayment}
         reservationData={reservationData}
         reservationLoading={reservationLoading}

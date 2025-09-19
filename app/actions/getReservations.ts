@@ -1,26 +1,26 @@
-import prisma from "../libs/prismadb"
+import prisma from "../libs/prismadb";
 
 interface reservationParams {
-  listingId?: string
-  userId?: string
-  authorId?: string
+  listingId?: string;
+  userId?: string;
+  authorId?: string;
 }
 
 export default async function getReservation(params: reservationParams) {
   try {
-    const { listingId, userId, authorId } = params
-    const query: any = {}
+    const { listingId, userId, authorId } = params;
+    const query: any = {};
 
     if (listingId) {
-      query.listingId = listingId
+      query.listingId = listingId;
     }
 
     if (userId) {
-      query.userId = userId
+      query.userId = userId;
     }
 
     if (authorId) {
-      query.authorId = authorId
+      query.authorId = authorId;
     }
 
     const reservations = await prisma.reservation.findMany({
@@ -31,9 +31,9 @@ export default async function getReservation(params: reservationParams) {
       orderBy: {
         createdAt: "desc",
       },
-    })
+    });
 
-    const safeReservations = reservations.map((reservation) => ({
+    const safeReservations = reservations.map(reservation => ({
       ...reservation,
       createdAt: reservation.createdAt.toISOString(),
       startDate: reservation.startDate.toISOString(),
@@ -42,10 +42,10 @@ export default async function getReservation(params: reservationParams) {
         ...reservation.listing,
         createdAt: reservation.listing.createdAt.toISOString(),
       },
-    }))
+    }));
 
-    return safeReservations
+    return safeReservations;
   } catch (error: any) {
-    throw new Error(error)
+    throw new Error(error);
   }
 }

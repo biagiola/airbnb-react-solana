@@ -51,11 +51,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setLoading(true);
 
     try {
-      console.log("💳 Processing payment for reservation:", reservationData.reservationPDA);
+      console.log(
+        "💳 Processing payment for reservation:",
+        reservationData.reservationPDA
+      );
       await onPayment();
       toast.success("Payment successful! Reservation confirmed.");
       paymentModal.onClose();
-      
+
       // 🔥 REMOVED: Reset logic moved to parent ListingClient
     } catch (err: any) {
       console.error("Payment failed:", err);
@@ -69,11 +72,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const paymentBody = (
     <div className="p-5">
       <Heading title="Complete Payment" />
-      
+
       {/* Listing Details */}
       <div className="border-b pb-5 mb-5">
         <h3 className="font-semibold text-lg mb-3">{listingTitle}</h3>
-        
+
         <div className="space-y-3">
           {/* Dates */}
           <div className="flex items-center gap-3">
@@ -81,7 +84,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div>
               <div className="text-sm text-gray-600">Check-in - Check-out</div>
               <div className="font-medium">
-                {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
+                {startDate.toLocaleDateString()} -{" "}
+                {endDate.toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -91,7 +95,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <BsPeople size={20} className="text-gray-500" />
             <div>
               <div className="text-sm text-gray-600">Guests</div>
-              <div className="font-medium">{guestCount} guest{guestCount > 1 ? 's' : ''}</div>
+              <div className="font-medium">
+                {guestCount} guest{guestCount > 1 ? "s" : ""}
+              </div>
             </div>
           </div>
         </div>
@@ -102,7 +108,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <h4 className="font-semibold mb-3">Price Details</h4>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span>${pricePerNight} x {totalNights} night{totalNights > 1 ? 's' : ''}</span>
+            <span>
+              ${pricePerNight} x {totalNights} night{totalNights > 1 ? "s" : ""}
+            </span>
             <span>${totalPrice}</span>
           </div>
           <div className="flex justify-between">
@@ -123,7 +131,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           <BiMoney size={24} className="text-green-600" />
           <div>
             <div className="font-medium">Blockchain Payment</div>
-            <div className="text-sm text-gray-600">Pay with your connected wallet</div>
+            <div className="text-sm text-gray-600">
+              Pay with your connected wallet
+            </div>
           </div>
         </div>
       </div>
@@ -131,7 +141,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       {/* Reservation Status */}
       {reservationLoading && (
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-          <p className="text-sm text-blue-600">Creating reservation on blockchain...</p>
+          <p className="text-sm text-blue-600">
+            Creating reservation on blockchain...
+          </p>
         </div>
       )}
 
@@ -141,10 +153,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             ✅ Reservation created! ID: {reservationData.reservationId}
           </p>
           <p className="text-xs text-green-500 mt-1">
-            PDA: {reservationData.reservationPDA.slice(0, 8)}...{reservationData.reservationPDA.slice(-8)}
+            PDA: {reservationData.reservationPDA.slice(0, 8)}...
+            {reservationData.reservationPDA.slice(-8)}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Status: {reservationData.details.status} • Payment: {reservationData.details.paymentStatus}
+            Status: {reservationData.details.status} • Payment:{" "}
+            {reservationData.details.paymentStatus}
           </p>
         </div>
       )}
@@ -158,8 +172,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       {/* Payment Description */}
       <div className="text-sm text-gray-600 mb-4">
-        By confirming this payment, you agree to create a reservation and pay via blockchain escrow. 
-        The payment will be held securely until check-in.
+        By confirming this payment, you agree to create a reservation and pay
+        via blockchain escrow. The payment will be held securely until check-in.
       </div>
     </div>
   );
@@ -169,7 +183,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       isOpen={paymentModal.isOpen}
       label="Payment"
       body={paymentBody}
-      buttonLabel={reservationLoading ? "Creating Reservation..." : `Confirm Payment ($${totalPrice + Math.round(totalPrice * 0.05)})`}
+      buttonLabel={
+        reservationLoading
+          ? "Creating Reservation..."
+          : `Confirm Payment ($${totalPrice + Math.round(totalPrice * 0.05)})`
+      }
       onSubmit={submitHandler}
       close={paymentModal.onClose}
       buttonLoading={loading || reservationLoading}

@@ -1,26 +1,33 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { listingPDA_1, parseListingAccount, RPC } from "@/app/actions/anchor/constants";
+import {
+  listingPDA_1,
+  parseListingAccount,
+  RPC,
+} from "@/app/actions/anchor/constants";
 
 interface IParams {
-  listingId?: string
+  listingId?: string;
 }
 
 export default async function currentListing(params: IParams) {
   try {
-    const connection = new Connection(RPC, "confirmed"); 
+    const connection = new Connection(RPC, "confirmed");
     const { listingId } = params;
 
     // For now, use listingPDA_1 as default, but this should use listingId when we implement PDA routing
     const pdaToUse = listingId || listingPDA_1;
     const listingPk = new PublicKey(pdaToUse);
-    
-    const listingAccount = await connection.getAccountInfo(listingPk, "confirmed");
+
+    const listingAccount = await connection.getAccountInfo(
+      listingPk,
+      "confirmed"
+    );
     if (!listingAccount) return null;
 
     // Parse the blockchain listing data
     const listingData = parseListingAccount(listingAccount.data);
     console.log("listingAccount: ", listingAccount);
-    
+
     // Return data in the format expected by the frontend
     return {
       id: pdaToUse,

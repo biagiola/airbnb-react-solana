@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { SafeListing, SafeUser } from "@/app/types"
-import React, { FC } from "react"
-import { IconType } from "react-icons"
-import Avatar from "../Avatar"
-import ListingCategory from "./ListingCategory"
-import { PiCalendarBlank } from "react-icons/pi"
-import ReservationCard from "../reservations/ReservationCard"
-import { Range } from "react-date-range"
+import { SafeListing, SafeUser } from "@/app/types";
+import React, { FC } from "react";
+import { IconType } from "react-icons";
+import Avatar from "../Avatar";
+import ListingCategory from "./ListingCategory";
+import { PiCalendarBlank } from "react-icons/pi";
+import ReservationCard from "../reservations/ReservationCard";
+import { Range } from "react-date-range";
 
 interface ListingBodyProps {
-  user: SafeUser
-  currentUser?: SafeUser | null
-  listing: SafeListing
+  user: SafeUser;
+  currentUser?: SafeUser | null;
+  listing: SafeListing;
   category:
     | {
-        icon: IconType
-        label: string
+        icon: IconType;
+        label: string;
       }
-    | undefined
-  totalPrice: number
-  onDateChange: (value: any) => void
-  onSubmit: () => void
-  dateRange: Range
-  disabledDates: Date[]
-  loading?: boolean
+    | undefined;
+  totalPrice: number;
+  onDateChange: (value: any) => void;
+  onSubmit: () => void;
+  dateRange: Range;
+  disabledDates: Date[];
+  loading?: boolean;
 }
 
 const ListingBody: FC<ListingBodyProps> = ({
@@ -37,7 +37,7 @@ const ListingBody: FC<ListingBodyProps> = ({
   onSubmit,
   dateRange,
   disabledDates,
-  loading
+  loading,
 }) => {
   return (
     <div className="flex flex-col phone:flex-row gap-5 px-5 phone:px-0 w-full">
@@ -82,7 +82,7 @@ const ListingBody: FC<ListingBodyProps> = ({
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ListingBody
+export default ListingBody;

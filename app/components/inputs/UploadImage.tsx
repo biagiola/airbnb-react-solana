@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { CldUploadWidget } from "next-cloudinary"
-import Image from "next/image"
-import { useCallback } from "react"
-import { IoImagesOutline } from "react-icons/io5"
+import { CldUploadWidget } from "next-cloudinary";
+import Image from "next/image";
+import { useCallback } from "react";
+import { IoImagesOutline } from "react-icons/io5";
 
 declare global {
-  var cloudinary: any
+  var cloudinary: any;
 }
 
 interface UploadImageProps {
-  value: string
-  onChange: (value: string) => void
+  value: string;
+  onChange: (value: string) => void;
 }
 
 const UploadImage: React.FC<UploadImageProps> = ({ value, onChange }) => {
   const handleUpload = useCallback(
     (result: any) => {
-      onChange(result.info.secure_url)
+      onChange(result.info.secure_url);
     },
     [onChange]
-  )
+  );
   return (
     <CldUploadWidget
       onUpload={handleUpload}
@@ -49,10 +49,10 @@ const UploadImage: React.FC<UploadImageProps> = ({ value, onChange }) => {
               </div>
             )}
           </div>
-        )
+        );
       }}
     </CldUploadWidget>
-  )
-}
+  );
+};
 
-export default UploadImage
+export default UploadImage;

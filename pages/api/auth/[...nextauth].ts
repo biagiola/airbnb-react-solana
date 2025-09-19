@@ -1,10 +1,10 @@
-import NextAuth, { AuthOptions } from "next-auth"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import GithubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
-import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcrypt"
-import prisma from "@/app/libs/prismadb"
+import NextAuth, { AuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+import prisma from "@/app/libs/prismadb";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -24,10 +24,9 @@ export const authOptions: AuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-
         //If no email or password throw an error
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials")
+          throw new Error("Invalid credentials");
         }
 
         //Find unique user by email
@@ -35,36 +34,36 @@ export const authOptions: AuthOptions = {
           where: {
             email: credentials.email,
           },
-        })
+        });
 
         //Throw an error if user is not found
         if (!user || !user?.hashedPassword) {
-          throw new Error("Invalid credentials")
+          throw new Error("Invalid credentials");
         }
 
         //Check if password is correct for the user
         const isCorrectPass = await bcrypt.compare(
           credentials.password,
           user.hashedPassword
-        )
+        );
 
         //If password is incorrect throw an error
         if (!isCorrectPass) {
-            throw new Error("Invalid credentials")
+          throw new Error("Invalid credentials");
         }
 
-        return user
+        return user;
       },
     }),
   ],
   pages: {
-    signIn: '/'
+    signIn: "/",
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === "development",
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET
-}
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);

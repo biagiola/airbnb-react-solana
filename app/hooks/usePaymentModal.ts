@@ -6,7 +6,7 @@ interface PaymentModalStore {
   onClose: () => void;
 }
 
-const usePaymentModal = create<PaymentModalStore>((set) => ({
+const usePaymentModal = create<PaymentModalStore>(set => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

@@ -1,0 +1,23 @@
+# Exclude blockchain folder (has its own prettier config)
+airbnb-blockhain/
+
+# Exclude build outputs
+.next/
+node_modules/
+dist/
+build/
+
+# Exclude generated files
+*.lock
+yarn.lock
+package-lock.json
+
+# Exclude environment files
+.env*
+
+# Exclude git
+.git/
+
+# Exclude other config files that shouldn't be formatted
+*.md
+*.json

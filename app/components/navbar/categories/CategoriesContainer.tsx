@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   MdOutlineHomeWork,
@@ -7,17 +7,24 @@ import {
   MdOutlineCastle,
   MdOutlineDownhillSkiing,
   MdOutlinePalette,
-} from "react-icons/md"
-import {PiBoat, PiCactus, PiLighthouse, PiSwimmingPool, PiTree, PiTreePalm} from 'react-icons/pi'
-import { TbBeach, TbChefHat } from "react-icons/tb"
-import {BiDish} from 'react-icons/bi'
-import { TbUfo } from "react-icons/tb"
-import { HiOutlineHomeModern, HiOutlineFire } from "react-icons/hi2"
-import { IoSnowOutline, IoBedOutline } from "react-icons/io5"
-import { SlCup } from "react-icons/sl"
+} from "react-icons/md";
+import {
+  PiBoat,
+  PiCactus,
+  PiLighthouse,
+  PiSwimmingPool,
+  PiTree,
+  PiTreePalm,
+} from "react-icons/pi";
+import { TbBeach, TbChefHat } from "react-icons/tb";
+import { BiDish } from "react-icons/bi";
+import { TbUfo } from "react-icons/tb";
+import { HiOutlineHomeModern, HiOutlineFire } from "react-icons/hi2";
+import { IoSnowOutline, IoBedOutline } from "react-icons/io5";
+import { SlCup } from "react-icons/sl";
 
-import Category from "./Category"
-import { usePathname, useSearchParams } from "next/navigation"
+import Category from "./Category";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export const categories = [
   {
@@ -42,7 +49,7 @@ export const categories = [
   },
   {
     label: "Luxury",
-    icon: BiDish
+    icon: BiDish,
   },
   {
     label: "Amazing Pools",
@@ -50,7 +57,7 @@ export const categories = [
   },
   {
     label: "Tropical",
-    icon: PiTreePalm
+    icon: PiTreePalm,
   },
   {
     label: "Castles",
@@ -62,7 +69,7 @@ export const categories = [
   },
   {
     label: "Towers",
-    icon: PiLighthouse
+    icon: PiLighthouse,
   },
   {
     label: "Historical",
@@ -74,7 +81,7 @@ export const categories = [
   },
   {
     label: "Desert",
-    icon: PiCactus
+    icon: PiCactus,
   },
   {
     label: "Trending",
@@ -82,7 +89,7 @@ export const categories = [
   },
   {
     label: "Treehouses",
-    icon: PiTree
+    icon: PiTree,
   },
   {
     label: "Arctic",
@@ -98,25 +105,25 @@ export const categories = [
   },
   {
     label: "Boats",
-    icon: PiBoat
+    icon: PiBoat,
   },
   {
     label: "Kitchen",
-    icon: TbChefHat
-  }
-]
+    icon: TbChefHat,
+  },
+];
 
 const CategoriesContainer = () => {
-  const pathname = usePathname()
-  const params = useSearchParams()
-  const category = params?.get('category')
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const category = params?.get("category");
 
-  if(pathname !== '/') return
+  if (pathname !== "/") return;
 
   return (
     <div className="phone:px-10 large:px-20 phone:my-5 w-full shadow-md phone:shadow-none shadow-light-gray/10 flex items-center">
       <div className="px-5 phone:px-0 flex items-center gap-5 phone:gap-10 w-full no_scrollbar overflow-x-scroll">
-        {categories.map((item) => (
+        {categories.map(item => (
           <Category
             key={item.label}
             label={item.label}
@@ -126,7 +133,7 @@ const CategoriesContainer = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CategoriesContainer
+export default CategoriesContainer;

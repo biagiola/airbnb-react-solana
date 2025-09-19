@@ -33,7 +33,7 @@ const ReservationCard: FC<ReservationCardProps> = ({
       <div className="flex flex-col rounded-md">
         <Calendar
           value={dateRange}
-          onChange={(value) => onDateChange(value.selection)}
+          onChange={value => onDateChange(value.selection)}
           disabled={disabledDates}
         />
       </div>

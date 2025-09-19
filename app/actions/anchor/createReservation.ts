@@ -4,21 +4,23 @@ import {
   guestPDA,
   listingPDA_1,
   parseListingAccount,
-  RPC
+  RPC,
 } from "@/app/actions/anchor/constants";
-import { 
-  CreateReservationResult, 
-  ReservationStatus, 
-  PaymentStatus 
+import {
+  CreateReservationResult,
+  ReservationStatus,
+  PaymentStatus,
 } from "@/app/types/blockchain";
 
 interface reservationParams {
-  listingId?: string
-  userId?: string
-  authorId?: string
+  listingId?: string;
+  userId?: string;
+  authorId?: string;
 }
 
-export default async function createReservation(params: reservationParams): Promise<CreateReservationResult> {
+export default async function createReservation(
+  params: reservationParams
+): Promise<CreateReservationResult> {
   try {
     const { listingId, userId, authorId } = params;
 
@@ -42,7 +44,7 @@ export default async function createReservation(params: reservationParams): Prom
       [
         Buffer.from(RESERVATION_SEED),
         guestPubkey.toBuffer(),
-        reservationIdBuffer
+        reservationIdBuffer,
       ],
       new PublicKey("5FeA9qBzmvEDreexhEMmivcz9KccuhCZaqWWVYxtkgm9") // actual program ID
     );
@@ -56,16 +58,20 @@ export default async function createReservation(params: reservationParams): Prom
 
     // Mock reservation data
     const now = Math.floor(Date.now() / 1000);
-    const startDate = now + (24 * 60 * 60); // Tomorrow
-    const endDate = startDate + (3 * 24 * 60 * 60); // 3 nights
+    const startDate = now + 24 * 60 * 60; // Tomorrow
+    const endDate = startDate + 3 * 24 * 60 * 60; // 3 nights
     const guestCount = 2;
     const totalNights = 3;
     const pricePerNight = 150; // $150/night
     const totalPrice = pricePerNight * totalNights;
 
     console.log("📅 Reservation details:");
-    console.log(`   Check-in: ${new Date(startDate * 1000).toLocaleDateString()}`);
-    console.log(`   Check-out: ${new Date(endDate * 1000).toLocaleDateString()}`);
+    console.log(
+      `   Check-in: ${new Date(startDate * 1000).toLocaleDateString()}`
+    );
+    console.log(
+      `   Check-out: ${new Date(endDate * 1000).toLocaleDateString()}`
+    );
     console.log(`   Guests: ${guestCount}`);
     console.log(`   Nights: ${totalNights}`);
     console.log(`   Rate: $${pricePerNight}/night`);
@@ -73,7 +79,7 @@ export default async function createReservation(params: reservationParams): Prom
 
     // TODO: Implement actual blockchain transaction
     // For now, return the calculated data with proper typing
-    
+
     const result: CreateReservationResult = {
       success: true,
       reservationId: reservation_id,
@@ -90,12 +96,11 @@ export default async function createReservation(params: reservationParams): Prom
         totalPrice,
         status: ReservationStatus.PENDING,
         paymentStatus: PaymentStatus.PENDING,
-        createdAt: now
-      }
+        createdAt: now,
+      },
     };
 
     return result;
-
   } catch (error: any) {
     console.error("❌ Error creating reservation:", error);
     throw new Error(`Failed to create reservation: ${error.message}`);

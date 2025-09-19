@@ -91,7 +91,7 @@ const RentModal = () => {
   const nextStep = () => {
     if (!validateStep()) return;
     if (step !== STEPS.PRICE) {
-      setStep((prev) => prev + 1);
+      setStep(prev => prev + 1);
       return;
     }
 
@@ -124,7 +124,7 @@ const RentModal = () => {
 
   const prevStep = () => {
     setErrors({});
-    setStep((prev) => prev - 1);
+    setStep(prev => prev - 1);
   };
 
   const buttonLabel = useMemo(() => {
@@ -141,7 +141,7 @@ const RentModal = () => {
     <div className="p-5">
       <Heading title="Which of these best describes your place?" />
       <div className="grid grid-cols-2 phone:grid-cols-3 gap-3 max-h-[50vh] overflow-auto pb-5">
-        {categories.map((category) => {
+        {categories.map(category => {
           return (
             <CategoryInput
               key={category.label}
@@ -168,7 +168,7 @@ const RentModal = () => {
         />
         <CountryInput
           value={selectedCountry}
-          onChange={(value) => setSelectedCountry(value)}
+          onChange={value => setSelectedCountry(value)}
         />
         {errors.location && (
           <p className="text-xs text-red-500 mt-1">{errors.location}</p>

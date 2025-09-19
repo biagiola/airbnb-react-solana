@@ -15,7 +15,7 @@ export default async function Listings() {
       <main className="pb-20 px-5 phone:px-10 max-w-6xl mx-auto large:px-10">
         <Heading title="My properties" />
         <div className="grid grid-cols-1 sm:grid-cols-2 medium:grid-cols-3 largest:grid-cols-4 gap-8">
-          {listings?.map((listing) => (
+          {listings?.map(listing => (
             <ListingCard
               key={listing.id}
               data={listing}

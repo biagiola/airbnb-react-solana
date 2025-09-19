@@ -1,18 +1,17 @@
-import React from "react"
+import React from "react";
 
+import getCurrentListing from "@/app/actions/anchor/getCurrentListing";
+import createReservation from "@/app/actions/anchor/createReservation";
+import getCurrentUser from "@/app/actions/anchor/getCurrentUser";
 
-import getCurrentListing from "@/app/actions/anchor/getCurrentListing"
-import createReservation from "@/app/actions/anchor/createReservation"
-import getCurrentUser from "@/app/actions/anchor/getCurrentUser"
-
-import ListingClient from "./ListingClient"
-import ClientOnly from "@/app/components/ClientOnly"
+import ListingClient from "./ListingClient";
+import ClientOnly from "@/app/components/ClientOnly";
 
 interface IParams {
-  listingId?: string
+  listingId?: string;
 }
 
-const page = async ({ params } : { params: IParams}) => {
+const page = async ({ params }: { params: IParams }) => {
   const listing = await getCurrentListing(params);
   const reservations = await createReservation(params);
   const currentUser = await getCurrentUser();
@@ -27,7 +26,7 @@ const page = async ({ params } : { params: IParams}) => {
         reservations={Array.isArray(reservations) ? reservations : []}
       />
     </ClientOnly>
-  )
-}
+  );
+};
 
-export default page
+export default page;

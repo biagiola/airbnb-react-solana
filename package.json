@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx}\"",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:reset": "npx prisma db push --force-reset && npm run db:seed"
   },
@@ -49,6 +51,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/bn.js": "^5.1.0",
     "@types/react-date-range": "^1.4.4",
+    "prettier": "^2.8.8",
     "prisma": "^4.15.0",
     "tsx": "^4.7.0"
   }
